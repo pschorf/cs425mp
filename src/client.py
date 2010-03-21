@@ -37,6 +37,8 @@ class client(object):
             self._handleKick(msg)
         elif msg.find('LEADER-ELECT') > -1:
             self._handleElect(msg)
+        if self._msgHandler != None:
+            self._msgHandler(msg, source)
             
     def _handleElect(self, msg):
         arr = msg.split('##')
@@ -97,7 +99,7 @@ class client(object):
         self._log('new leader: ' + str(self.getLeader()))
         
             
-    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), port=5555):
+    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), port=5555,handler=None):
         self._matchmaker = matchmaker.matchmaker(servername=servername, port=port, handler=self._handleMsg)
         self._timers = {}
         self._matchmaker.onPlayerAdded = self._addPlayer
@@ -107,6 +109,7 @@ class client(object):
         t = threading.Timer(5,self._heartbeat)
         t.daemon = True
         t.start()
+        self._msgHandler = handler
         
     def _heartbeat(self):
         for player in self.getPlayers():
