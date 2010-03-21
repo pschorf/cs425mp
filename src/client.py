@@ -128,7 +128,7 @@ class client(object):
         t.daemon = True
         t.start()
         
-    def _log(self, msg):
+    def log(self, msg):
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
     def _getLog(self):
