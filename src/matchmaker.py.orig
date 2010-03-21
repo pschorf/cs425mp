@@ -1,0 +1,329 @@
+<<<<<<< HEAD
+'''
+Created on Feb 22, 2010
+
+@author: Paul
+'''
+
+import re, threading, socket
+
+class matchmaker(object):
+    '''
+    A class to help control the interface with the matchmaking server
+    '''
+    
+    def getLeader(self):
+        return self._leader
+    
+    def getAddress(self):
+        return self._addr
+    
+    def getPlayers(self):
+        return [p for p in self._otherPlayers + [self._leader] if p != self._addr]
+    def removePlayer(self, player):
+        self._removePlayer(player)
+    def findGame(self):
+        if self._leader == None:
+            self._getGame()
+        return self.getPlayers()
+    
+    def disconnect(self):
+        self._listening.release()
+        for player in self.getPlayers():
+            self.send(player, 'DISCONNECT ' + str(self._addr))
+        self._otherPlayers = []
+        self._leader = None
+        
+    def requestNewPlayer(self):
+        if self._addr != self._leader:
+            return
+        else:
+            self.send((self._nameserver,self._nsport), 'ADDPLAYER')
+        
+    def _getGame(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((self._nameserver, self._nsport))
+        self._addr = sock.getsockname()
+        sock.send(str(self._addr) + '###JOIN')
+        resp = sock.recv(1024)
+        if resp.find('NEWGAME') > -1:
+            self._leader = self._addr
+            sock.close()
+            t = threading.Thread(target=self._listen,args=[self._addr])
+            t.daemon = True
+            t.start()
+            return
+        else:
+            m = re.match('JOIN \(\'([\d\.]+)\', (\d+)\)', resp)
+            self._joinGame((m.group(1), int(m.group(2))))
+                     
+    def _joinGame(self, game_addr):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(game_addr)
+        self._addr = sock.getsockname()
+        sock.send(str(self._addr) + '### JOIN')
+        resp = sock.recv(1024)
+        if resp.find('SUCCESS') > -1:
+            arr = resp.split('##')
+            arr = arr[1:len(arr)]
+            for s in arr:
+                m = re.match('\(\'([\d\.]+)\', (\d+)\)', s)
+                self._addPlayer((m.group(1), int(m.group(2))))
+            self._addPlayer(self._addr)
+            self._leader = game_addr
+            sock.close()
+            t = threading.Thread(target=self._listen,args=[self._addr])
+            t.daemon = True
+            t.start()
+    
+    def _handleRequest(self, client, client_addr):
+        resp = client.recv(1024)
+        source_addr = ()
+        arr = resp.split('###')
+        if len(arr) < 2:
+            return
+        else:
+            resp = arr[1]
+            source_addr = parseAddr(arr[0])
+        if resp.find('JOIN') > -1 and self._leader == self._addr:
+            client.send('SUCCESS' + formatPlayers(self._otherPlayers))
+            for player in self._otherPlayers:
+                self.send(player, 'NEWPLAYER' + str(source_addr))
+            self._addPlayer(client_addr)
+        elif resp.find('NEWPLAYER') > -1:
+            self._addPlayer(parseAddr(resp))
+        elif resp.find('DISCONNECT') > -1:
+            self._removePlayer(source_addr)
+        self._handler(resp, source_addr)
+            
+    def send(self, addr, message):
+        if self._leader == None:
+            return
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(addr)
+        sock.send(str(self._addr) + '###' + message)
+    
+    def _addPlayer(self, player):
+        self._otherPlayers.append(player)
+        if self.onPlayerAdded != None and player != self._addr:
+            self.onPlayerAdded(player)
+    
+    def _removePlayer(self, player):
+        if player in self._otherPlayers:
+            self._otherPlayers.remove(player)
+        if self.onPlayerRemoved != None and player != self._addr:
+            self.onPlayerRemoved(player)
+    
+    def _listen(self, addr):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(addr)
+        sock.listen(50)
+        while 1:
+            (client, client_addr) = sock.accept()
+            self._handleRequest(client, client_addr)
+
+    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), port=5555,handler=None):
+        self._nameserver = servername
+        self._nsport = port
+        self._otherPlayers = []
+        self._listening = threading.Lock()
+        self._listening.acquire()
+        self._leader = None
+        self._handler = handler
+        if self._handler == None:
+            self._handler = lambda k, y: k
+    def __del__(self):
+        self.disconnect()
+
+def _dummy(text, source):
+    pass  
+        
+def formatPlayers(players):
+    s = '##'
+    for player in players:
+        s += str(player) + '##'
+    s = s[0:len(s)-2]
+    return s
+        
+def parseAddr(s):
+    m = re.search('\(\'([\d\.]+)\', (\d+)\)', s)
+    return (m.group(1), int(m.group(2)))
+
+=======
+'''
+Created on Feb 22, 2010
+
+@author: Paul
+'''
+
+import re, threading, socket, weakref
+
+class matchmaker(object):
+    '''
+    A class to help control the interface with the matchmaking server
+    '''
+    
+    def getLeader(self):
+        return self._leader
+    
+    def getAddress(self):
+        return self._addr
+    
+    def changeLeader(self):
+        newLeader = self._otherPlayers[0]
+        oldLeader = self._leader
+        self._leader = newLeader
+        self._otherPlayers.remove(newLeader)
+        if self._leader == self._addr:
+            self.send((self._nameserver, self._nsport), 'LEADER-CHANGE##' + str(oldLeader) + '##' + str(newLeader))
+            self._pingThread = threading.Timer(15,self._ping)
+            self._pingThread.daemon = True
+            self._pingThread.start()
+    
+    def getPlayers(self):
+        return [p for p in self._otherPlayers + [self._leader] if p != self._addr]
+    
+    def removePlayer(self, player):
+        self._removePlayer(player)
+        
+    def findGame(self):
+        if self._leader == None:
+            self._getGame()
+        return self.getPlayers()
+    
+    def disconnect(self):
+        if self._addr == self._leader:
+            for player in self.getPlayers():
+                self.send(player, 'LEADER-ELECT##' + str(self._addr))
+        for player in self.getPlayers():
+            self.send(player, 'DISCONNECT##' + str(self._addr))
+        self._otherPlayers = []
+        self._leader = None
+        if self._pingThread != None:
+            self._pingThread.cancel()
+        
+    def requestNewPlayer(self):
+        if self._addr != self._leader:
+            return
+        else:
+            self.send((self._nameserver,self._nsport), 'ADDPLAYER')
+        
+    def _getGame(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((self._nameserver, self._nsport))
+        self._addr = sock.getsockname()
+        sock.send(str(self._addr) + '###JOIN')
+        resp = sock.recv(1024)
+        if resp.find('NEWGAME') > -1:
+            self._leader = self._addr
+            sock.close()
+            t = threading.Thread(target=self._listen,args=[self._addr])
+            t.daemon = True
+            t.start()
+            t = threading.Timer(15,self._ping)
+            t.daemon = True
+            t.start()
+            return
+        else:
+            m = re.match('JOIN \(\'([\d\.]+)\', (\d+)\)', resp)
+            self._joinGame((m.group(1), int(m.group(2))))
+                     
+    def _joinGame(self, game_addr):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(game_addr)
+        self._addr = sock.getsockname()
+        sock.send(str(self._addr) + '### JOIN')
+        resp = sock.recv(1024)
+        if resp.find('SUCCESS') > -1:
+            arr = resp.split('##')
+            arr = arr[1:len(arr)]
+            for s in arr:
+                m = re.match('\(\'([\d\.]+)\', (\d+)\)', s)
+                self._addPlayer((m.group(1), int(m.group(2))))
+            self._addPlayer(self._addr)
+            self._leader = game_addr
+            sock.close()
+            t = threading.Thread(target=self._listen,args=[self._addr])
+            t.daemon = True
+            t.start()
+    
+    def _handleRequest(self, client, client_addr):
+        resp = client.recv(1024)
+        source_addr = ()
+        arr = resp.split('###')
+        if len(arr) < 2:
+            return
+        else:
+            resp = arr[1]
+            source_addr = parseAddr(arr[0])
+        if resp.find('JOIN') > -1 and self._leader == self._addr:
+            client.send('SUCCESS' + formatPlayers(self._otherPlayers))
+            for player in self._otherPlayers:
+                self.send(player, 'NEWPLAYER' + str(source_addr))
+            self._addPlayer(client_addr)
+        elif resp.find('NEWPLAYER') > -1:
+            self._addPlayer(parseAddr(resp))
+        elif resp.find('DISCONNECT') > -1:
+            self._removePlayer(source_addr)
+        self._handler(resp, source_addr)
+            
+    def send(self, addr, message):
+        print str(self._addr) + ' ' + message
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(addr)
+        sock.send(str(self._addr) + '###' + message)
+    
+    def _addPlayer(self, player):
+        self._otherPlayers.append(player)
+        if self.onPlayerAdded != None and player != self._addr:
+            self.onPlayerAdded(player)
+    
+    def _removePlayer(self, player):
+        if player in self._otherPlayers:
+            self._otherPlayers.remove(player)
+        if self.onPlayerRemoved != None and player != self._addr:
+            self.onPlayerRemoved(player)
+    
+    def _listen(self, addr):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(addr)
+        sock.listen(50)
+        while 1:
+            (client, client_addr) = sock.accept()
+            self._handleRequest(client, client_addr)
+    def _ping(self):
+        self.send((self._nameserver, self._nsport), 'PING')
+        if self._leader == self._addr:
+            self._pingThread = threading.Timer(15, self._ping)
+            self._pingThread.daemon = True
+            self._pingThread.start()
+
+    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), port=5555,handler=None):
+        self._nameserver = servername
+        self._nsport = port
+        self._otherPlayers = []
+        self._leader = None
+        self._pingThread = None
+        self._handler = handler
+        if self._handler == None:
+            self._handler = lambda k, y: k
+
+def _dummy(text, source):
+    pass  
+        
+def formatPlayers(players):
+    s = '##'
+    for player in players:
+        s += str(player) + '##'
+    s = s[0:len(s)-2]
+    return s
+        
+def parseAddr(s):
+    m = re.search('\(\'([\d\.]+)\', (\d+)\)', s)
+    try:
+        return (m.group(1), int(m.group(2)))
+    except:
+        print s
+
+>>>>>>> crap
+        
