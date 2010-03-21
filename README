@@ -1,0 +1,7 @@
+This is the semester long project for CS 425, Spring 2010 by Myles Megyesi, Paul Schorfheide, and Tom Thompson.  It is a distributed Pac Man game.
+
+Classes:
+
+matchmaker is the lowest level class for interacting with the server, maintaining games, etc.
+
+client is a little higher level: this is the class you would use to conenct with other games.  Most everything will happen automagically, you should just be able to happily send and receive messages from other players.  This can be run from the the command line (python client.py) to run a test client that does nothing.
