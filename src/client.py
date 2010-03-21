@@ -71,11 +71,15 @@ class client(object):
         self._timers[player].daemon = True
         self._timers[player].start()
         self._log('added ' + str(player))
+        if self._playerAddedHander != None:
+            self._playerAddedHander(player)
     def _removePlayer(self, player):
         if player in self._timers:
             self._timers[player].cancel()
             del self._timers[player]
             self._log('removed ' + str(player))
+            if self._playerRemovedHander != None:
+                self._playerRemovedHander(player)
             
     def _search(self, player):
         self._incrementPlayerLost(player)
@@ -99,7 +103,11 @@ class client(object):
         self._log('new leader: ' + str(self.getLeader()))
         
             
-    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), port=5555,handler=None):
+    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), 
+                 port=5555,
+                 onMessageReceived=None,
+                 onPlayerAdded=None,
+                 onPlayerRemoved=None):
         self._matchmaker = matchmaker.matchmaker(servername=servername, port=port, handler=self._handleMsg)
         self._timers = {}
         self._matchmaker.onPlayerAdded = self._addPlayer
@@ -109,7 +117,9 @@ class client(object):
         t = threading.Timer(5,self._heartbeat)
         t.daemon = True
         t.start()
-        self._msgHandler = handler
+        self._msgHandler = onMessageReceived
+        self._playerAddedHander = onPlayerAdded
+        self._playerRemovedHander = onPlayerRemoved
         
     def _heartbeat(self):
         for player in self.getPlayers():
