@@ -20,6 +20,9 @@ class client(object):
     def send(self, target, msg):
         self._log('sent ' + msg + ' to ' + str(target))
         self._matchmaker.send(target, msg)
+	def sendToAll(self, msg):
+		for player in self.getPlayers():
+			self.send(player, msg)
     def _handleMsg(self, msg, source):
         if not source in self.getPlayers():
             return
@@ -128,7 +131,7 @@ class client(object):
         t.daemon = True
         t.start()
         
-    def _log(self, msg):
+    def log(self, msg):
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
     def _getLog(self):
