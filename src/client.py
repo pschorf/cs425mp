@@ -22,6 +22,9 @@ class client(object):
     def send(self, target, msg):
         self.log('sent ' + msg + ' to ' + str(target))
         self._matchmaker.send(target, msg)
+    def sendToAll(self, msg):
+        for player in self.getPlayers():
+            self.send(player, msg)
     def _handleMsg(self, msg, source):
         if not source in self.getPlayers():
             return
@@ -95,7 +98,6 @@ class client(object):
             for i in self.getPlayers():
                 self.send(i, 'KICK ' + str(player))           
             self._matchmaker.removePlayer(player)
-            self._matchmaker.requestNewPlayer()
         if self._matchmaker.getLeader() in self._lostPlayers and self._lostPlayers[self._matchmaker.getLeader()] >= 2:
             self._electLeader()
     def _electLeader(self):
