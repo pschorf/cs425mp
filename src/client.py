@@ -9,20 +9,22 @@ TIMEOUT = 10
 class client(object):
     def findGame(self):
         x = self._matchmaker.findGame()
-        self._log(str(self._matchmaker.getAddress()))
+        self.log(str(self._matchmaker.getAddress()))
         return x
     def disconnect(self):
         self._matchmaker.disconnect()
+    def getSelf(self):
+        return self._matchmaker.getAddress()
     def getLeader(self):
         return self._matchmaker.getLeader()
     def getPlayers(self):
         return self._matchmaker.getPlayers()
     def send(self, target, msg):
-        self._log('sent ' + msg + ' to ' + str(target))
+        self.log('sent ' + msg + ' to ' + str(target))
         self._matchmaker.send(target, msg)
-	def sendToAll(self, msg):
-		for player in self.getPlayers():
-			self.send(player, msg)
+    def sendToAll(self, msg):
+        for player in self.getPlayers():
+            self.send(player, msg)
     def _handleMsg(self, msg, source):
         if not source in self.getPlayers():
             return
@@ -33,7 +35,7 @@ class client(object):
         self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
         self._timers[source].daemon = True
         self._timers[source].start()
-        self._log('received ' + msg + ' from ' + str(source))
+        self.log('received ' + msg + ' from ' + str(source))
         if msg.find('LOST') > -1:
             self._handleLost(msg)
         elif msg.find('KICK') > -1 and source == self.getLeader():
@@ -50,7 +52,7 @@ class client(object):
         leader = matchmaker.parseAddr(arr[1])
         if leader == self.getLeader():
             self._matchmaker.changeLeader()
-            self._log('new leader: ' + str(self.getLeader()))
+            self.log('new leader: ' + str(self.getLeader()))
                     
     def _handleLost(self, msg):
         missing = matchmaker.parseAddr(msg)
@@ -68,19 +70,19 @@ class client(object):
             self._lostPlayers[missing] = self._lostPlayers[missing] + 1
         else:
             self._lostPlayers[missing] = 1
-        self._log(str(missing) + ' has count ' + str(self._lostPlayers[missing]))  
+        self.log(str(missing) + ' has count ' + str(self._lostPlayers[missing]))  
     def _addPlayer(self, player):
         self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
         self._timers[player].daemon = True
         self._timers[player].start()
-        self._log('added ' + str(player))
+        self.log('added ' + str(player))
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
     def _removePlayer(self, player):
         if player in self._timers:
             self._timers[player].cancel()
             del self._timers[player]
-            self._log('removed ' + str(player))
+            self.log('removed ' + str(player))
             if self._playerRemovedHander != None:
                 self._playerRemovedHander(player)
             
@@ -103,7 +105,7 @@ class client(object):
         for player in self.getPlayers():
             self.send(player, 'LEADER-ELECT##' + str(self.getLeader()))
         self._matchmaker.changeLeader()
-        self._log('new leader: ' + str(self.getLeader()))
+        self.log('new leader: ' + str(self.getLeader()))
         
             
     def __init__(self, servername=socket.gethostbyname(socket.gethostname()), 

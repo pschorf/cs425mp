@@ -1,13 +1,10 @@
-class Enumerate(object):
-    def _init_(self, names):
-        for number, name in enumerate(names.split()):
-            setattr(self, name, number)
-bops = Enumerate('FLOOR WALL DOT SUPER_DOT')
 
+bops = {'FLOOR':0, 'WALL':1, 'DOT':2, 'SUPER_DOT':3}
+dirs = {'LEFT':0, 'RIGHT':1, 'UP':2, 'DOWN':3}
 class board(object):
-    global bops
+    global bops, dirs
     def __init__(self):
-        b = []
+        '''b = []
         #first two rows are wall
         b.append([])
         for i in xrange(30):
@@ -47,7 +44,11 @@ class board(object):
             b[3][i+22] = bops.WALL
         b[3][27] = bops.DOT
         b[3][28] = bops.WALL
-        b[3][29] = bops.WALL
+        b[3][29] = bops.WALL'''
         #fifth row
-    def canMove(self, dir):
+    def canMove(self, dir, (x, y)):
         return True
+    def pacmanStart(self):
+        return (0, 0, dirs['LEFT'])
+    def ghostStart(self):
+        return (0, 0, dirs['UP'])

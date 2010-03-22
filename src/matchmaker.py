@@ -4,7 +4,7 @@ Created on Feb 22, 2010
 @author: Paul
 '''
 
-import re, threading, socket, weakref, time
+import re, threading, socket, time
 
 class matchmaker(object):
     '''
