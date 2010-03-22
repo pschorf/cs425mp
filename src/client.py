@@ -95,7 +95,6 @@ class client(object):
             for i in self.getPlayers():
                 self.send(i, 'KICK ' + str(player))           
             self._matchmaker.removePlayer(player)
-            self._matchmaker.requestNewPlayer()
         if self._matchmaker.getLeader() in self._lostPlayers and self._lostPlayers[self._matchmaker.getLeader()] >= 2:
             self._electLeader()
     def _electLeader(self):
