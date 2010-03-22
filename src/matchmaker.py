@@ -121,7 +121,7 @@ class matchmaker(object):
         elif resp.find('NEWPLAYER') > -1:
             self._addPlayer(parseAddr(resp))
         elif resp.find('DISCONNECT') > -1:
-            self._removePlayer(source_addr)
+            self.removePlayer(source_addr)
         self._handler(resp, source_addr)
             
     def send(self, addr, message):
