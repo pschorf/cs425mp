@@ -13,8 +13,8 @@ class board(object):
             self._board.append(temp)
         inFile.close()
     def canMove(self, dir, (x, y)):
-		try:
-			switch(dir){
+        '''try:
+            switch(dir):
 			case dirs['LEFT']:
 				if(self._board[x-1][y] not 1):
 					return True
@@ -34,9 +34,11 @@ class board(object):
 			}
 			return False
 		except:
-			return False
+			return False'''
         return True
     def pacmanStart(self):
-        return (2, 1, dirs['LEFT'])
+        return (0, 0, dirs['LEFT'])
+        #return (2, 1, dirs['LEFT'])
     def ghostStart(self):
-        return (2, 24, dirs['UP'])
+        return (0, 0, dirs['LEFT'])
+        #return (2, 24, dirs['UP'])
