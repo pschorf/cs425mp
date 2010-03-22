@@ -2,6 +2,7 @@ import socket, time, re, threading, sys
 games = []
 LISTEN_PORT = 5555
 LOGFILE_NAME = 'server.log'
+TIMEOUT = 10
 
 logfile = 0
 
@@ -49,7 +50,7 @@ def makeTimer(game, create=False):
     if game in timers:
         timers[game].cancel()
     if game in timers or create:
-        timers[game] = threading.Timer(30, clearGame, [game])
+        timers[game] = threading.Timer(TIMEOUT, clearGame, [game])
         timers[game].daemon = True
         timers[game].start()
 
