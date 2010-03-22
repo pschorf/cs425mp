@@ -27,6 +27,8 @@ class matchmaker(object):
             self._pingThread = threading.Timer(15,self._ping)
             self._pingThread.daemon = True
             self._pingThread.start()
+        if self._onLeaderChange != None:
+            self._onLeaderChange(newLeader)
     
     def getPlayers(self): 
         return [p for p in self._otherPlayers + [self._leader] if p != self._addr and p != None]
@@ -160,7 +162,9 @@ class matchmaker(object):
             self._pingThread.daemon = True
             self._pingThread.start()
 
-    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), port=5555,handler=None):
+    def __init__(self, servername=socket.gethostbyname(socket.gethostname()), 
+                 port=5555,handler=None,
+                 onLeaderChanged=None):
         self._nameserver = servername
         self._nsport = port
         self._otherPlayers = []
@@ -168,6 +172,7 @@ class matchmaker(object):
         self._addr = None
         self._pingThread = None
         self._handler = handler
+        self._onLeaderChange = onLeaderChanged
         if self._handler == None:
             self._handler = lambda k, y: k
 

@@ -111,8 +111,10 @@ class client(object):
                  port=5555,
                  onMessageReceived=None,
                  onPlayerAdded=None,
-                 onPlayerRemoved=None):
-        self._matchmaker = matchmaker.matchmaker(servername=servername, port=port, handler=self._handleMsg)
+                 onPlayerRemoved=None,
+                 onLeaderChange=None):
+        self._matchmaker = matchmaker.matchmaker(servername=servername, port=port, handler=self._handleMsg,
+                                                 onLeaderChanged=onLeaderChange)
         self._timers = {}
         self._matchmaker.onPlayerAdded = self._addPlayer
         self._matchmaker.onPlayerRemoved = self._removePlayer
@@ -133,6 +135,8 @@ class client(object):
         t.start()
         
     def log(self, msg):
+        if msg.find('SYNCNEWPLAYER') > -1:
+            msg = msg.split('SYNCNEWPLAYER ')[0]
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
     def _getLog(self):
