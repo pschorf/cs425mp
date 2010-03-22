@@ -48,8 +48,10 @@ def intervalExecute(interval, func, *args, **argd):
 
 class game(object):
     global msgs, dirs, sops
-    def printState(self):
-        str(self._states[self._c.getSelf()].printPos())
+    def disc(self):
+        self._c.disconnect()
+    def printStates2(self):
+        print str(self._states)
     def printStates(self):
         for k in self._states:
             self._states[k].printPos()
@@ -78,6 +80,7 @@ class game(object):
                 else:
                     self._states[p] = state(sops['GHOST'])
             self._states[self._c.getSelf()] = state(sops['GHOST'])
+        print str(self._numPlayers)
         intervalExecute(1.0, self.update)
         inputThread = threading.Thread(target=self._input)
         inputThread.daemon = True
@@ -113,6 +116,8 @@ class game(object):
     def _input(self):
         f = open('input', 'r')
         for m in f:
+            while not self._play:
+                continue
             mlock.acquire()
             if m[0:1] == 'L':
                 self._msgs.put('LEFT')
@@ -122,7 +127,6 @@ class game(object):
                 self._msgs.put('RIGHT')
                 self._states[self._c.getSelf()].move(dirs['RIGHT'])
             elif m[0:1] == 'U':
-                print 'got up'
                 self._msgs.put('UP')
                 self._states[self._c.getSelf()].move(dirs['UP'])
             elif m[0:1] == 'D':

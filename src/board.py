@@ -10,7 +10,7 @@ class board(object):
             temp = []
             for char in line[0:30]:
                 temp.append(int(char))
-            board.append(temp)
+            self._board.append(temp)
         inFile.close()
     def canMove(self, dir, (x, y)):
         return True
