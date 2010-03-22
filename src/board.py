@@ -14,24 +14,18 @@ class board(object):
         inFile.close()
     def canMove(self, dir, (x, y)):
 		try:
-			switch(dir){
-			case dirs['LEFT']:
+			if(dir == dirs['LEFT']):
 				if(self._board[x-1][y] not 1):
 					return True
-				break
-			case dirs['RIGHT']:
+			elif(dir == dirs['RIGHT']):
 				if(self._board[x+1][y] not 1):
 					return True
-				break
-			case dirs['UP']:
+			elif(dir == dirs['UP']):
 				if(self._board[x][y-1] not 1):
 					return True
-				break
-			case dirs['DOWN']:
+			elif(dir == dirs['DOWN']):
 				if(self._board[x][y+1] not 1):
 					return True
-				break
-			}
 			return False
 		except:
 			return False
