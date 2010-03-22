@@ -133,6 +133,8 @@ class client(object):
         t.start()
         
     def log(self, msg):
+		if msg.find('SYNCNEWPLAYER') > -1:
+           msg = msg.split('SYNCNEWPLAYER ')[0]
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
     def _getLog(self):
