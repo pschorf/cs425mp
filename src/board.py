@@ -13,8 +13,30 @@ class board(object):
             self._board.append(temp)
         inFile.close()
     def canMove(self, dir, (x, y)):
+		try:
+			switch(dir){
+			case dirs['LEFT']:
+				if(self._board[x-1][y] not 1):
+					return True
+				break
+			case dirs['RIGHT']:
+				if(self._board[x+1][y] not 1):
+					return True
+				break
+			case dirs['UP']:
+				if(self._board[x][y-1] not 1):
+					return True
+				break
+			case dirs['DOWN']:
+				if(self._board[x][y+1] not 1):
+					return True
+				break
+			}
+			return False
+		except:
+			return False
         return True
     def pacmanStart(self):
-        return (0, 0, dirs['LEFT'])
+        return (2, 1, dirs['LEFT'])
     def ghostStart(self):
-        return (0, 0, dirs['UP'])
+        return (2, 24, dirs['UP'])

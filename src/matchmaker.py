@@ -33,6 +33,8 @@ class matchmaker(object):
     
     def removePlayer(self, player):
         self._removePlayer(player)
+        if self.getLeader() == self.getAddress():
+            self._requestNewPlayer()
         
     def findGame(self):
         if self._leader == None:
@@ -50,7 +52,7 @@ class matchmaker(object):
         if self._pingThread != None:
             self._pingThread.cancel()
         
-    def requestNewPlayer(self):
+    def _requestNewPlayer(self):
         if self._addr != self._leader:
             return
         else:
@@ -119,7 +121,7 @@ class matchmaker(object):
         elif resp.find('NEWPLAYER') > -1:
             self._addPlayer(parseAddr(resp))
         elif resp.find('DISCONNECT') > -1:
-            self._removePlayer(source_addr)
+            self.removePlayer(source_addr)
         self._handler(resp, source_addr)
             
     def send(self, addr, message):
