@@ -1,5 +1,4 @@
-import board, client, sys, threading, Queue, pickle, time
-     
+import board, client, sys, threading, Queue, pickle, time, os, random
 dirs = {'LEFT':0, 'RIGHT':1, 'UP':2, 'DOWN':3}
 sops = {'PACMAN':0, 'GHOST':1}
 board = board.board()
@@ -7,6 +6,8 @@ mlock = threading.RLock()
 
 class state(object):
     global dirs, board, sops
+    def changeType(self, type):
+        self._type = type
     def getState(self):
         return (self._x, self._y, self._dir, self._type)
     def setState(self, x, y, dir, type):
@@ -14,21 +15,19 @@ class state(object):
         self._y = y
         self._dir = dir
         self._type = type
-    def printPos(self):
-        print '(x: ' + str(self._x) + ', y: ' + str(self._y) + ', Type: ' + str(self._type) + ')'
     def move(self, dir):
         if board.canMove(dir, (self._x, self._y)):
             if (dir == dirs['LEFT']):
-                self._x = self._x - 1
+                self._x -= 1
                 self._dir = dir
             elif (dir == dirs['RIGHT']):
-                self._x = self._x + 1
+                self._x += 1
                 self._dir = dir
             elif (dir == dirs['UP']):
-                self._y = self._y - 1
+                self._y -= 1
                 self._dir = dir
             elif (dir == dirs['DOWN']):
-                self._y = self._y + 1
+                self._y += 1
                 self._dir = dir
     def __init__(self, type):
         if type == sops['PACMAN']:
@@ -54,7 +53,7 @@ def intervalExecute(interval, func, *args, **argd):
     
 
 class game(object):
-    global msgs, dirs, sops
+    global msgs, dirs, sops, board
     def disconnect(self):
         self._c.disconnect()
     def printStates2(self):
@@ -62,7 +61,34 @@ class game(object):
     def printStates(self):
         print str(self._c.getSelf())
         for k in self._states:
-            self._states[k].printPos()
+            print self._states[k].getState()
+    def printBoard(self):
+        for arr in board.board:
+            baz = ''
+            for num in arr:
+                baz += str(num)
+            print baz
+    def draw(self):
+        tempit = 0
+        temp = []
+        for arr in board.board:
+            temp.append([])
+            for char in arr:
+                temp[tempit].append(char)
+            tempit += 1
+        for k in self._states:
+            (x, y, dir, type) = self._states[k].getState()
+            if type == sops['PACMAN']:
+                temp[y][x] = 'p'
+            elif type == sops['GHOST']:
+                temp[y][x] = 'g'
+        os.system(['clear', 'cls'][os.name == 'nt'])
+        for arr in temp:
+            baz = ''
+            for num in arr:
+                baz += str(num)
+            print baz
+            
     def __init__(self):
         self._holding = Queue.Queue()
         self._msgs = Queue.Queue()
@@ -85,7 +111,7 @@ class game(object):
         inputThread.start()
     def _newLeader(self, player):
         if player == self._c.getSelf():
-            
+            self._states[player].changeType(sops['PACMAN'])
     def _playerAdded(self, player):
         if player == None:
             return
@@ -99,7 +125,8 @@ class game(object):
             self._play = True
     def _playerRemoved(self, player):
         self._numPlayers -= 1
-        self._c.log('STOPPING GAME')
+        if self._numPlayers == 4:
+            self._c.log('STOPPING GAME')
         self._play = False
         del self._states[player]
     def _handleMsg(self, msg, source):
@@ -131,32 +158,37 @@ class game(object):
         while not self._holding.empty():
             (msg, source) = self._holding.get()
             self._handleMsg(msg, source)
+        #randomize moves
+        self._msgs.put(random.randrange(0, 4, 1))
         while not self._msgs.empty():
             mlock.acquire()
             q = self._msgs.get()
-            if q == 'LEFT':
+            if q == dirs['LEFT']:
+                self._c.sendToAll('LEFT')
                 self._states[self._c.getSelf()].move(dirs['LEFT'])
-            elif q == 'RIGHT':
+            elif q == dirs['RIGHT']:
+                self._c.sendToAll('RIGHT')
                 self._states[self._c.getSelf()].move(dirs['RIGHT'])
-            elif q == 'UP':
+            elif q == dirs['UP']:
+                self._c.sendToAll('UP')
                 self._states[self._c.getSelf()].move(dirs['UP'])
-            elif q == 'DOWN':
+            elif q == dirs['DOWN']:
+                self._c.sendToAll('DOWN')
                 self._states[self._c.getSelf()].move(dirs['DOWN'])
             mlock.release()
-            self._c.sendToAll(q)
+        self.draw()
     def _input(self):
         f = open('input', 'r')
         for m in f:
             mlock.acquire()
             if m[0:1] == 'L':
-                self._msgs.put('LEFT')
+                self._msgs.put(dirs['LEFT'])
             elif m[0:1] == 'R':
-                print 'RIGHT'
-                self._msgs.put('RIGHT')
+                self._msgs.put(dirs['RIGHT'])
             elif m[0:1] == 'U':
-                self._msgs.put('UP')
+                self._msgs.put(dirs['UP'])
             elif m[0:1] == 'D':
-                self._msgs.put('DOWN')
+                self._msgs.put(dirs['DOWN'])
             mlock.release()
         f.close()
     def _sync(self, player):

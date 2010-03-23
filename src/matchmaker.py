@@ -98,7 +98,8 @@ class matchmaker(object):
             arr = arr[1:len(arr)]
             for s in arr:
                 m = re.match('\(\'([\d\.]+)\', (\d+)\)', s)
-                self._addPlayer((m.group(1), int(m.group(2))))
+                if m != None:
+                    self._addPlayer((m.group(1), int(m.group(2))))
             self._addPlayer(self._addr)
             self._leader = game_addr
             sock.close()
