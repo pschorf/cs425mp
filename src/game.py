@@ -90,13 +90,13 @@ class game(object):
                 baz += str(num)
             print baz
             
-    def __init__(self):
+    def __init__(self, wait_time=None):
         self._holding = Queue.Queue()
         self._msgs = Queue.Queue()
         self._play = False
         self._numPlayers = 1
         self._states = {}
-        name = '192.168.1.124'
+        name = '192.17.204.88'
         port = 5555
         if len(sys.argv) >= 2:
             name = sys.argv[1]
@@ -109,12 +109,13 @@ class game(object):
         inputThread = threading.Thread(target=self._input)
         inputThread.daemon = True
         inputThread.start()
-        cancelled = threading.Event()
-        while True:
-            cancelled.wait(update_interval)
-            if cancelled.isSet():
-                break
-            self.update()
+        if wait_time==None:
+            while True:
+                time.sleep(update_interval)
+                self.update()
+        else:
+            intervalExecute(update_interval, self.update)
+            time.sleep(wait_time)
     def _newLeader(self, player):
         if player == self._c.getSelf():
             self._states[player].changeType(sops['PACMAN'])

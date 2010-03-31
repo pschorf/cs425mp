@@ -20,7 +20,10 @@ class client(object):
     def getPlayers(self):
         return self._matchmaker.getPlayers()
     def send(self, target, msg):
-        self.log('sent ' + msg + ' to ' + str(target))
+        log = msg
+        if msg.find('SYNC') > -1:
+            log = 'SYNCNEWPLAYER'
+        self.log('sent ' + log + ' to ' + str(target))
         self._matchmaker.send(target, msg)
     def sendToAll(self, msg):
         for player in self.getPlayers():
@@ -35,14 +38,17 @@ class client(object):
         self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
         self._timers[source].daemon = True
         self._timers[source].start()
-        self.log('received ' + msg + ' from ' + str(source))
+        log = msg
+        if msg.find('SYNC') > -1:
+            log = 'SYNCNEWPLAYER'
+        self.log('received ' + log + ' from ' + str(source))
         if msg.find('LOST') > -1:
             self._handleLost(msg)
         elif msg.find('KICK') > -1 and source == self.getLeader():
             self._handleKick(msg)
         elif msg.find('LEADER-ELECT') > -1:
             self._handleElect(msg)
-        if self._msgHandler != None:
+        elif self._msgHandler != None:
             self._msgHandler(msg, source)
             
     def _handleElect(self, msg):
@@ -140,8 +146,6 @@ class client(object):
         t.start()
         
     def log(self, msg):
-        if msg.find('SYNCNEWPLAYER') > -1:
-            msg = msg.split('SYNCNEWPLAYER ')[0]
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
     def _getLog(self):

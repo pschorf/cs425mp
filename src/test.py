@@ -1,14 +1,10 @@
-import game, time, threading
+import game, threading
 
 NUM_CLIENTS = 100
 
 def runClient():
-    foo = game.game()
-
+    foo = game.game(60)
 for i in range(NUM_CLIENTS):
     t = threading.Thread(target=runClient)
-    t.daemon = True
+    t.daemon = False
     t.start()
-time.sleep(120)
-    
-

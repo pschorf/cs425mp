@@ -93,7 +93,7 @@ class matchmaker(object):
             else:
                 raise
         self._addr = sock.getsockname()
-        sock.send(str(self._addr) + '### JOIN')
+        sock.send(str(self._addr) + '###JOIN')
         try:
             resp = sock.recv(1024)
         except:
@@ -118,20 +118,22 @@ class matchmaker(object):
         source_addr = ()
         arr = resp.split('###')
         if len(arr) < 2:
+            print str(arr)
             return
         else:
             resp = arr[1]
             source_addr = parseAddr(arr[0])
-        if resp.find('JOIN') > -1 and self._leader == self._addr:
+        if resp.find('JOIN') == 0 and self._leader == self._addr:
             client.send('SUCCESS' + formatPlayers(self._otherPlayers))
             for player in self._otherPlayers:
                 self.send(player, 'NEWPLAYER' + str(source_addr))
             self._addPlayer(client_addr)
-        elif resp.find('NEWPLAYER') > -1:
+        elif resp.find('NEWPLAYER') == 0:
             self._addPlayer(parseAddr(resp))
-        elif resp.find('DISCONNECT') > -1:
+        elif resp.find('DISCONNECT') == 0:
             self.removePlayer(source_addr)
-        self._handler(resp, source_addr)
+        else:
+            self._handler(resp, source_addr)
             
     def send(self, addr, message):
         if self._leader == None:
