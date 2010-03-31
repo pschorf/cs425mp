@@ -64,7 +64,16 @@ class matchmaker(object):
     def _getGame(self,attempt=3):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(30)
-        sock.connect((self._nameserver, self._nsport))
+        try:
+            sock.connect((self._nameserver, self._nsport))
+    	except:
+	    sock.close()
+	    if attempt > 0:
+                time.sleep(5)
+                self._getGame(attempt-1)
+                return
+            else:
+                raise
         self._addr = sock.getsockname()
         sock.send(str(self._addr) + '###JOIN')
         resp = sock.recv(1024)

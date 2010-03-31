@@ -35,9 +35,9 @@ class client(object):
             self._timers[source].cancel()
         if source in self._lostPlayers:
             self._lostPlayers[source] = 0
-        self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
-        self._timers[source].daemon = True
-        self._timers[source].start()
+        #self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
+        #self._timers[source].daemon = True
+        #self._timers[source].start()
         log = msg
         if msg.find('SYNC') > -1:
             log = 'SYNCNEWPLAYER'
@@ -83,9 +83,9 @@ class client(object):
     def _addPlayer(self, player):
         if player == None:
             raise Exception()
-        self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-        self._timers[player].daemon = True
-        self._timers[player].start()
+        #self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+        #self._timers[player].daemon = True
+        #self._timers[player].start()
         self.log('added ' + str(player))
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
@@ -101,9 +101,9 @@ class client(object):
         self._incrementPlayerLost(player)
         if self._matchmaker.getAddress() != self.getLeader():
             self.send(self.getLeader(), 'LOST ' + str(player))
-        self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-        self._timers[player].daemon = True
-        self._timers[player].start()
+        #self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+        #self._timers[player].daemon = True
+        #self._timers[player].start()
         if self.getLeader() == self._matchmaker.getAddress() and self._lostPlayers[player] > len(self.getPlayers())/2:
             del self._lostPlayers[player]
             for i in self.getPlayers():

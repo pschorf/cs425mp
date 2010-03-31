@@ -5,6 +5,7 @@ board = board.board()
 mlock = threading.RLock()
 update_interval = 1.0
 
+
 class state(object):
     global dirs, board, sops
     def changeType(self, type):
@@ -207,3 +208,6 @@ class game(object):
             senddict[p] = pickle.dumps(self._states[p].getState())
         pstr = 'SYNCNEWPLAYER ' + pickle.dumps(senddict)
         self._c.send(player, pstr)
+		
+if __name__ == "__main__":
+	f = game(60)
