@@ -5,3 +5,13 @@ Classes:
 matchmaker is the lowest level class for interacting with the server, maintaining games, etc.
 
 client is a little higher level: this is the class you would use to conenct with other games.  Most everything will happen automagically, you should just be able to happily send and receive messages from other players.  This can be run from the the command line (python client.py) to run a test client that does nothing.
+
+server is the matchmaking server, run it as 
+
+python server.py
+
+game is the actual game client, and can be run as
+
+python game.py <server_ip> --unsafe --quiet --port=<server_port>
+
+all that's necessary is the server ip, quiet supresses the output, unsafe turns off several threads that monitor the other game players, this is necessary to test the 2000 clients.

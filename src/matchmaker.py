@@ -61,15 +61,15 @@ class matchmaker(object):
         else:
             self.send((self._nameserver,self._nsport), 'ADDPLAYER')
         
-    def _getGame(self,attempt=3):
+    def _getGame(self,attempt=4):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(30)
+        sock.settimeout(45)
         try:
             sock.connect((self._nameserver, self._nsport))
     	except:
 	    sock.close()
 	    if attempt > 0:
-                time.sleep(5)
+                time.sleep(10)
                 self._getGame(attempt-1)
                 return
             else:
