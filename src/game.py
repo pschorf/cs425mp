@@ -182,7 +182,7 @@ class game(object):
                 self._c.sendToAll('DOWN')
                 self._states[self._c.getSelf()].move(dirs['DOWN'])
             mlock.release()
-        self.draw()
+#        self.draw()
     def _input(self):
         f = open('input', 'r')
         for m in f:
