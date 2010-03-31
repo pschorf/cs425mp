@@ -35,9 +35,10 @@ class client(object):
             self._timers[source].cancel()
         if source in self._lostPlayers:
             self._lostPlayers[source] = 0
-        #self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
-        #self._timers[source].daemon = True
-        #self._timers[source].start()
+        if self._isSafe:
+            self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
+            self._timers[source].daemon = True
+            self._timers[source].start()
         log = msg
         if msg.find('SYNC') > -1:
             log = 'SYNCNEWPLAYER'
@@ -83,9 +84,10 @@ class client(object):
     def _addPlayer(self, player):
         if player == None:
             raise Exception()
-        #self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-        #self._timers[player].daemon = True
-        #self._timers[player].start()
+        if self._isSafe:
+            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+            self._timers[player].daemon = True
+            self._timers[player].start()
         self.log('added ' + str(player))
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
@@ -101,9 +103,10 @@ class client(object):
         self._incrementPlayerLost(player)
         if self._matchmaker.getAddress() != self.getLeader():
             self.send(self.getLeader(), 'LOST ' + str(player))
-        #self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-        #self._timers[player].daemon = True
-        #self._timers[player].start()
+        if self._isSafe:
+            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+            self._timers[player].daemon = True
+            self._timers[player].start()
         if self.getLeader() == self._matchmaker.getAddress() and self._lostPlayers[player] > len(self.getPlayers())/2:
             del self._lostPlayers[player]
             for i in self.getPlayers():
@@ -123,7 +126,8 @@ class client(object):
                  onMessageReceived=None,
                  onPlayerAdded=None,
                  onPlayerRemoved=None,
-                 onLeaderChange=None):
+                 onLeaderChange=None,
+                 isSafe=True):
         self._matchmaker = matchmaker.matchmaker(servername=servername, port=port, handler=self._handleMsg,
                                                  onLeaderChanged=onLeaderChange)
         self._timers = {}
@@ -131,9 +135,11 @@ class client(object):
         self._matchmaker.onPlayerRemoved = self._removePlayer
         self._logFile = open(self._getLog(), 'w')
         self._lostPlayers = {}
-#        t = threading.Timer(5,self._heartbeat)
-#        t.daemon = True
-#        t.start()
+        self._isSafe = isSafe
+        if self._isSafe:
+            t = threading.Timer(5,self._heartbeat)
+            t.daemon = True
+            t.start()
         self._msgHandler = onMessageReceived
         self._playerAddedHander = onPlayerAdded
         self._playerRemovedHander = onPlayerRemoved

@@ -1,4 +1,4 @@
-import board, client, sys, threading, Queue, pickle, time, os, random
+import board, client, sys, threading, Queue, pickle, time, os, random, getopt
 dirs = {'LEFT':0, 'RIGHT':1, 'UP':2, 'DOWN':3}
 sops = {'PACMAN':0, 'GHOST':1}
 board = board.board()
@@ -91,19 +91,18 @@ class game(object):
                 baz += str(num)
             print baz
             
-    def __init__(self, wait_time=None):
+    def __init__(self, server_ip, 
+                 server_port=5555,
+                 wait_time=None,
+                 isSafe=True,
+                 printStates=True):
         self._holding = Queue.Queue()
         self._msgs = Queue.Queue()
         self._play = False
         self._numPlayers = 1
         self._states = {}
-        name = '192.17.204.88'
-        port = 5555
-        if len(sys.argv) >= 2:
-            name = sys.argv[1]
-        if len(sys.argv) >= 3:
-            port = int(sys.argv[2])
-        self._c = client.client(name, port, self._handleMsg, self._playerAdded, self._playerRemoved, self._newLeader)
+        self._shouldPrint = printStates
+        self._c = client.client(server_ip, server_port, self._handleMsg, self._playerAdded, self._playerRemoved, self._newLeader,isSafe)
         players = self._c.findGame()
         if not players:
             self._states[self._c.getSelf()] = state(sops['PACMAN'])
@@ -187,7 +186,8 @@ class game(object):
                 self._c.sendToAll('DOWN')
                 self._states[self._c.getSelf()].move(dirs['DOWN'])
             mlock.release()
-        #self.draw()
+        if self._shouldPrint:
+            self.draw()
     def _input(self):
         f = open('input', 'r')
         for m in f:
@@ -210,4 +210,23 @@ class game(object):
         self._c.send(player, pstr)
 		
 if __name__ == "__main__":
-	f = game(60)
+    port =5555
+    safe = True
+    doPrint = True
+    args = []
+    if len(sys.argv) < 2:
+        print 'Usage: ' + sys.argv[0] + ' server_ip -p <server_port> -u -q'
+        exit(0)
+    elif len(sys.argv) >= 2:
+        ip = sys.argv[1]
+        args = sys.argv[2:]
+    if not args == []:
+        opts, args = getopt.getopt(args, "uqp:", ["unsafe", "quiet", "port="])
+        for opt, arg in opts:
+            if opt in ("u", "--unsafe"):
+                safe = False
+            elif opt in ("q", "--quiet"):
+                doPrint = False
+            elif opt in ("p","--port="):
+                port = int(arg)
+    f = game(ip, port, 60,isSafe=safe,printStates=doPrint)
