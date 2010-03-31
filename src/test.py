@@ -1,9 +1,10 @@
-import game, time
+import game, time, threading
 
+NUM_CLIENTS = 500
 
-pac = game.game()
-ghost1 = game.game()
-ghost2 = game.game()
-ghost3 = game.game()
-ghost4 = game.game()
-time.sleep(20)
+for i in range(NUM_CLIENTS):
+    t = threading.Thread(target=runClient)
+    
+def runClient():
+    foo = game.game()
+    time.sleep(30)
