@@ -1,2 +1,2 @@
-for /l %%X in (1, 1, 100) do (start /B python client.py 192.17.145.141)
+for /l %%X in (1, 1, 5) do (start python test.py)
                                                                      

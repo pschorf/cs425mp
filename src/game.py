@@ -169,6 +169,9 @@ class game(object):
         while not self._msgs.empty():
             mlock.acquire()
             q = self._msgs.get()
+            if not self._c.getSelf() in self._states:
+                mlock.release()
+                continue
             if q == dirs['LEFT']:
                 self._c.sendToAll('LEFT')
                 self._states[self._c.getSelf()].move(dirs['LEFT'])
@@ -182,7 +185,7 @@ class game(object):
                 self._c.sendToAll('DOWN')
                 self._states[self._c.getSelf()].move(dirs['DOWN'])
             mlock.release()
-#        self.draw()
+        #self.draw()
     def _input(self):
         f = open('input', 'r')
         for m in f:

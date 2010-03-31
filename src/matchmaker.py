@@ -18,6 +18,7 @@ class matchmaker(object):
         return self._addr
     
     def changeLeader(self):
+        
         newLeader = self._otherPlayers[0]
         oldLeader = self._leader
         self._leader = newLeader
@@ -62,6 +63,7 @@ class matchmaker(object):
         
     def _getGame(self,attempt=3):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(30)
         sock.connect((self._nameserver, self._nsport))
         self._addr = sock.getsockname()
         sock.send(str(self._addr) + '###JOIN')
@@ -92,7 +94,11 @@ class matchmaker(object):
                 raise
         self._addr = sock.getsockname()
         sock.send(str(self._addr) + '### JOIN')
-        resp = sock.recv(1024)
+        try:
+            resp = sock.recv(1024)
+        except:
+            self._getGame()
+            return
         if resp.find('SUCCESS') > -1:
             arr = resp.split('##')
             arr = arr[1:len(arr)]
@@ -154,8 +160,11 @@ class matchmaker(object):
         sock.bind(addr)
         sock.listen(50)
         while 1:
-            (client, client_addr) = sock.accept()
-            self._handleRequest(client, client_addr)
+            try:
+                (client, client_addr) = sock.accept()
+                self._handleRequest(client, client_addr)
+            except:
+                pass
     def _ping(self):
         self.send((self._nameserver, self._nsport), 'PING')
         if self._leader == self._addr:

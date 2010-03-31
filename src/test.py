@@ -9,6 +9,6 @@ for i in range(NUM_CLIENTS):
     t = threading.Thread(target=runClient)
     t.daemon = True
     t.start()
-time.sleep(30)
+time.sleep(120)
     
 

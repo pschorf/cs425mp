@@ -3,7 +3,7 @@ import socket, re, threading, matchmaker, time, os, sys
 NAMESERVER = socket.gethostbyname(socket.gethostname())
 NSPORT = 5555
 file_lock = threading.Lock()
-TIMEOUT = 10
+TIMEOUT = 90
 
 
 class client(object):
@@ -60,6 +60,9 @@ class client(object):
 
     def _handleKick(self, msg):
         kicked = matchmaker.parseAddr(msg)
+        if kicked == None:
+            self._log("Failed to parse " + msg)
+            return
         if kicked == self._matchmaker.getAddress():
             self.disconnect()
         else:
@@ -72,6 +75,8 @@ class client(object):
             self._lostPlayers[missing] = 1
         self.log(str(missing) + ' has count ' + str(self._lostPlayers[missing]))  
     def _addPlayer(self, player):
+        if player == None:
+            raise Exception()
         self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
         self._timers[player].daemon = True
         self._timers[player].start()
@@ -120,9 +125,9 @@ class client(object):
         self._matchmaker.onPlayerRemoved = self._removePlayer
         self._logFile = open(self._getLog(), 'w')
         self._lostPlayers = {}
-        t = threading.Timer(5,self._heartbeat)
-        t.daemon = True
-        t.start()
+#        t = threading.Timer(5,self._heartbeat)
+#        t.daemon = True
+#        t.start()
         self._msgHandler = onMessageReceived
         self._playerAddedHander = onPlayerAdded
         self._playerRemovedHander = onPlayerRemoved
@@ -144,7 +149,7 @@ class client(object):
         files = os.listdir('logs')
         curFile = 0
         for file in files:
-            m = re.match(str(os.getpid()) + '_(\d)\.log', file)
+            m = re.match(str(os.getpid()) + '_(\d+)\.log', file)
             if m != None:
                 i = int(m.group(1))
                 if i >= curFile:
