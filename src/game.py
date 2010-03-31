@@ -96,7 +96,7 @@ class game(object):
         self._play = False
         self._numPlayers = 1
         self._states = {}
-        name = '192.168.1.129'
+        name = '192.168.1.124'
         port = 5555
         if len(sys.argv) >= 2:
             name = sys.argv[1]
