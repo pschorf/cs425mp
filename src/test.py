@@ -1,6 +1,6 @@
 import game, time, threading
 
-NUM_CLIENTS = 20
+NUM_CLIENTS = 100
 
 def runClient():
     foo = game.game()
