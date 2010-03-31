@@ -3,6 +3,7 @@ dirs = {'LEFT':0, 'RIGHT':1, 'UP':2, 'DOWN':3}
 sops = {'PACMAN':0, 'GHOST':1}
 board = board.board()
 mlock = threading.RLock()
+update_interval = 1.0
 
 class state(object):
     global dirs, board, sops
@@ -53,7 +54,7 @@ def intervalExecute(interval, func, *args, **argd):
     
 
 class game(object):
-    global msgs, dirs, sops, board
+    global msgs, dirs, sops, board, update_interval
     def disconnect(self):
         self._c.disconnect()
     def printStates2(self):
@@ -105,10 +106,15 @@ class game(object):
         players = self._c.findGame()
         if not players:
             self._states[self._c.getSelf()] = state(sops['PACMAN'])
-        intervalExecute(1.0, self.update)
         inputThread = threading.Thread(target=self._input)
         inputThread.daemon = True
         inputThread.start()
+        cancelled = threading.Event()
+        while True:
+            cancelled.wait(update_interval)
+            if cancelled.isSet():
+                break
+            self.update()
     def _newLeader(self, player):
         if player == self._c.getSelf():
             self._states[player].changeType(sops['PACMAN'])
