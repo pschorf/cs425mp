@@ -1,9 +1,9 @@
-import socket, re, threading, matchmaker, time, os, sys
+import socket, re, threading, matchmaker, time, os, sys, sqlite3
 
 NAMESERVER = socket.gethostbyname(socket.gethostname())
 NSPORT = 5555
 file_lock = threading.Lock()
-TIMEOUT = 90
+TIMEOUT = 20
 
 
 class client(object):
@@ -67,6 +67,7 @@ class client(object):
 
     def _handleKick(self, msg):
         kicked = matchmaker.parseAddr(msg)
+        
         if kicked == None:
             self._log("Failed to parse " + msg)
             return
@@ -92,6 +93,7 @@ class client(object):
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
     def _removePlayer(self, player):
+        sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
         if player in self._timers:
             self._timers[player].cancel()
             del self._timers[player]
@@ -109,6 +111,7 @@ class client(object):
             self._timers[player].start()
         if self.getLeader() == self._matchmaker.getAddress() and self._lostPlayers[player] > len(self.getPlayers())/2:
             del self._lostPlayers[player]
+            sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
             for i in self.getPlayers():
                 self.send(i, 'KICK ' + str(player))           
             self._matchmaker.removePlayer(player)
@@ -176,10 +179,37 @@ def run():
     if len(sys.argv) >= 2:
         name = sys.argv[1]
     if len(sys.argv) >= 3:
-        port = int(sys.argv[2])
+        port = int(sys.argv[2])    
+    #c = client(name, port)
+    #c.findGame()
+    if len(sys.argv) < 4:
+        for i in range(0,99):
+            t = threading.Thread(target=foo)
+            t.start()
+    else:
+        c = client(name, port)
+        c.findGame()
+        time.sleep(10)
+        sqlLog('quitting', str(time.time()), str(c.getSelf()))
+        return
+    #c.disconnect()
+    
+def foo():
+    name = socket.gethostbyname(socket.gethostname())
+    port = 5555
+    if len(sys.argv) >= 2:
+        name = sys.argv[1]
+    if len(sys.argv) >= 3:
+        port = int(sys.argv[2])    
     c = client(name, port)
     c.findGame()
-    time.sleep(60)
-    c.disconnect()
+    time.sleep(120)
+def sqlLog(msg,time, id):
+    run = 100
+    conn = sqlite3.connect('db')
+    c = conn.cursor()
+    s = "insert into logs values ('" + msg.replace("'", "") + "', " + str(time) + ", " + str(run) + ", '" + str(id).replace("'","")  + "')"
+    c.execute(s)
+    conn.commit()
 if __name__ == '__main__':
     run()

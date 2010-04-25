@@ -4,7 +4,7 @@ Created on Feb 22, 2010
 @author: Paul
 '''
 
-import re, threading, socket, weakref, time
+import re, threading, socket, weakref, time, sqlite3
 
 class matchmaker(object):
     '''
@@ -200,6 +200,7 @@ class matchmaker(object):
 def _dummy(text, source):
     pass  
         
+
 def formatPlayers(players):
     s = '##'
     for player in players:

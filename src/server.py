@@ -3,6 +3,7 @@ games = []
 LISTEN_PORT = 5555
 LOGFILE_NAME = 'server.log'
 TIMEOUT = 10
+MAX_PLAYERS = 50
 
 logfile = 0
 
@@ -22,7 +23,7 @@ def listenForRequests():
 def joinGame(client, client_addr):
     global games
     if len(games) == 0:
-        games.append((client_addr, 4))
+        games.append((client_addr, 100))
         logAndSend(client, client_addr, 'NEWGAME')
         makeTimer(client_addr, True)
     else:
