@@ -1,21 +1,48 @@
-import board, client, sys, threading, Queue, pickle, time, os, random
+'''
+    @author: Myles
+'''
+
+import board, client, sys, threading, Queue, pickle, time, os, random, getopt
+## @var dirs
+#A variable to define directions for movement
 dirs = {'LEFT':0, 'RIGHT':1, 'UP':2, 'DOWN':3}
+## @var sops
+# A varibale to define the player type
 sops = {'PACMAN':0, 'GHOST':1}
+## @var board
+# the global playing board
 board = board.board()
+## @var mlock
+# A semaphore used to when pushing or popping the messages queue
 mlock = threading.RLock()
+## @var update_interval
+# The interval at which to run the the game loop
 update_interval = 1.0
 
+## A class to define the state of the player
 class state(object):
     global dirs, board, sops
+    
+    ## Changes the type of player. Used during leader election
+    # @param type The player type to change to
     def changeType(self, type):
         self._type = type
+    ## State getter
+    # @return The state of the player
     def getState(self):
         return (self._x, self._y, self._dir, self._type)
+    ## State setter
+    # @param x The X coordinate
+    # @param y The Y coordinate
+    # @param dir the direction to face
+    # @param type The type of the player
     def setState(self, x, y, dir, type):
         self._x = x
         self._y = y
         self._dir = dir
         self._type = type
+    # Move the player one space in a given direction
+    # @param dir The direction to move the player
     def move(self, dir):
         if board.canMove(dir, (self._x, self._y)):
             if (dir == dirs['LEFT']):
@@ -30,45 +57,43 @@ class state(object):
             elif (dir == dirs['DOWN']):
                 self._y += 1
                 self._dir = dir
+    ## Constructor
+    # @param type The type to make the player
     def __init__(self, type):
         if type == sops['PACMAN']:
             (self._x, self._y, self._dir) = board.pacmanStart()
         elif type == sops['GHOST']:
             (self._x, self._y, self._dir) = board.ghostStart()
         self._type = type
-            
+
+## Executes a function repeatedly at every given interval
+# @param interval execute func(*args, **argd) each interval
+# @return a callable object to enable you terminate the timer
 def intervalExecute(interval, func, *args, **argd):
-    ''' @param interval: execute func(*args, **argd) each interval
-        @return: a callable object to enable you terminate the timer.
-    '''
     cancelled = threading.Event()
     def threadProc(*args, **argd):
         while True:
             cancelled.wait(interval)
             if cancelled.isSet():
                 break
-            func(*args, **argd) #: could be a lenthy operation
+            func(*args, **argd)
     th = threading.Thread(target=threadProc, args=args, kwargs=argd)
     th.daemon = True
     th.start()
     
-
+## A class to control the game
 class game(object):
     global msgs, dirs, sops, board, update_interval
+    ## Disconnects the player from the socket, used upon exit of game
     def disconnect(self):
-        self._c.disconnect()
+        self._c.disconnect
     def printStates2(self):
         print str(self._states)
     def printStates(self):
         print str(self._c.getSelf())
         for k in self._states:
             print self._states[k].getState()
-    def printBoard(self):
-        for arr in board.board:
-            baz = ''
-            for num in arr:
-                baz += str(num)
-            print baz
+    ## Draws the board on the screen, with the players
     def draw(self):
         tempit = 0
         temp = []
@@ -89,35 +114,44 @@ class game(object):
             for num in arr:
                 baz += str(num)
             print baz
-            
-    def __init__(self):
+    ## Constructor
+    # @param server_ip The IP Addres of the server.
+    # @param server_port The port of the server, default 5555
+    # @param wait_time The time to allow the program to run. If not set, the game will run indefinitely.
+    # @param isSafe Boolean to toggle the timeout threads on and off. Used for running many clients on one machine to keep under the thread limit.
+    # @param printStates Boolean to toggle printing the board on and off.
+    def __init__(self, server_ip, 
+                 server_port=5555,
+                 wait_time=None,
+                 isSafe=True,
+                 printStates=True):
         self._holding = Queue.Queue()
         self._msgs = Queue.Queue()
         self._play = False
         self._numPlayers = 1
         self._states = {}
-        name = '192.168.1.124'
-        port = 5555
-        if len(sys.argv) >= 2:
-            name = sys.argv[1]
-        if len(sys.argv) >= 3:
-            port = int(sys.argv[2])
-        self._c = client.client(name, port, self._handleMsg, self._playerAdded, self._playerRemoved, self._newLeader)
+        self._shouldPrint = printStates
+        self._c = client.client(server_ip, server_port, self._handleMsg, self._playerAdded, self._playerRemoved, self._newLeader,isSafe)
         players = self._c.findGame()
         if not players:
             self._states[self._c.getSelf()] = state(sops['PACMAN'])
         inputThread = threading.Thread(target=self._input)
         inputThread.daemon = True
         inputThread.start()
-        cancelled = threading.Event()
-        while True:
-            cancelled.wait(update_interval)
-            if cancelled.isSet():
-                break
-            self.update()
+        if wait_time==None:
+            while True:
+                time.sleep(update_interval)
+                self.update()
+        else:
+            intervalExecute(update_interval, self.update)
+            time.sleep(wait_time)
+    ## Changes the leader of the game
+    # @param player The new player
     def _newLeader(self, player):
         if player == self._c.getSelf():
             self._states[player].changeType(sops['PACMAN'])
+    ## Adds a player to the game
+    # @param The player to be added
     def _playerAdded(self, player):
         if player == None:
             return
@@ -129,12 +163,17 @@ class game(object):
         if self._numPlayers == 5:
             self._c.log('STARTING GAME')
             self._play = True
+    ## Removes a player from the game
+    # @param player The player to be removed
     def _playerRemoved(self, player):
         self._numPlayers -= 1
         if self._numPlayers == 4:
             self._c.log('STOPPING GAME')
         self._play = False
         del self._states[player]
+    ## Handles incoming messages from other players (syncs, moves, etc.)
+    # @param msg The messages to handle
+    # @param source The player that sent the message
     def _handleMsg(self, msg, source):
         if msg.find('SYNCNEWPLAYER') > -1:
             s = msg.split('SYNCNEWPLAYER ')[1]
@@ -158,6 +197,7 @@ class game(object):
                 self._states[source].move(dirs['UP'])
             elif msg[0:4] == 'DOWN':
                 self._states[source].move(dirs['DOWN'])
+    ## The game loop
     def update(self):
         if not self._play:
             return
@@ -169,6 +209,9 @@ class game(object):
         while not self._msgs.empty():
             mlock.acquire()
             q = self._msgs.get()
+            if not self._c.getSelf() in self._states:
+                mlock.release()
+                continue
             if q == dirs['LEFT']:
                 self._c.sendToAll('LEFT')
                 self._states[self._c.getSelf()].move(dirs['LEFT'])
@@ -182,7 +225,9 @@ class game(object):
                 self._c.sendToAll('DOWN')
                 self._states[self._c.getSelf()].move(dirs['DOWN'])
             mlock.release()
-        self.draw()
+        if self._shouldPrint:
+            self.draw()
+    ## Accepts keyboard input
     def _input(self):
         f = open('input', 'r')
         for m in f:
@@ -197,9 +242,34 @@ class game(object):
                 self._msgs.put(dirs['DOWN'])
             mlock.release()
         f.close()
+    ## Syncronizes the current game state of all players with a given player
+    # @param The player to syncronize with
     def _sync(self, player):
         senddict = {}
         for p in self._states:
             senddict[p] = pickle.dumps(self._states[p].getState())
         pstr = 'SYNCNEWPLAYER ' + pickle.dumps(senddict)
         self._c.send(player, pstr)
+		
+if __name__ == "__main__":
+    port =5555
+    safe = True
+    doPrint = True
+    args = []
+    if len(sys.argv) < 2:
+        print 'Usage: ' + sys.argv[0] + ' server_ip -p <server_port> -u -q'
+        exit(0)
+    elif len(sys.argv) >= 2:
+        ip = sys.argv[1]
+        args = sys.argv[2:]
+    if not args == []:
+        opts, args = getopt.getopt(args, "uqp:", ["unsafe", "quiet", "port="])
+        for opt, arg in opts:
+            if opt in ("u", "--unsafe"):
+                safe = False
+            elif opt in ("q", "--quiet"):
+                doPrint = False
+            elif opt in ("p","--port="):
+                port = int(arg)
+	print doPrint
+    f = game(ip, port, 60,isSafe=safe,printStates=doPrint)

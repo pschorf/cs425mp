@@ -1,0 +1,68 @@
+[Mon Mar 22 18:01:47 2010] added ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:47 2010] added ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:47 2010] ('192.168.1.119', 56663)
+[Mon Mar 22 18:01:47 2010] added None
+[Mon Mar 22 18:01:47 2010] received SYNCNEWPLAYER (dp0
+(S'192.168.1.119'
+p1
+I56659
+tp2
+S'(I0\nI0\nI0\nI1\ntp0\n.'
+p3
+s(S'192.168.1.119'
+p4
+I56655
+tp5
+S'(I0\nI0\nI0\nI0\ntp0\n.'
+p6
+s(S'192.168.1.119'
+p7
+I56657
+tp8
+S'(I0\nI0\nI0\nI1\ntp0\n.'
+p9
+s(S'192.168.1.119'
+p10
+I56663
+tp11
+S'(I0\nI0\nI0\nI1\ntp0\n.'
+p12
+s. from ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:47 2010] STARTING GAME
+[Mon Mar 22 18:01:47 2010] added ('192.168.1.119', 56668)
+[Mon Mar 22 18:01:47 2010] received NEWPLAYER('192.168.1.119', 56668) from ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:47 2010] received UP from ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:47 2010] received LEFT from ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:47 2010] received LEFT from ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:47 2010] received LEFT from ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:47 2010] received UP from ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:48 2010] received UP from ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] received LEFT from ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] received LEFT from ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] received LEFT from ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] received UP from ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56668)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56668)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56668)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56668)
+[Mon Mar 22 18:01:48 2010] sent LEFT to ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56657)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56659)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56668)
+[Mon Mar 22 18:01:48 2010] sent UP to ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] received UP from ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] received LEFT from ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] received LEFT from ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] received LEFT from ('192.168.1.119', 56655)
+[Mon Mar 22 18:01:48 2010] received UP from ('192.168.1.119', 56655)
