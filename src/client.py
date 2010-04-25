@@ -35,10 +35,11 @@ class client(object):
             self._timers[source].cancel()
         if source in self._lostPlayers:
             self._lostPlayers[source] = 0
-        if self._isSafe:
-            self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
-            self._timers[source].daemon = True
-            self._timers[source].start()
+#        if self._isSafe:
+#            self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
+#            self._timers[source].daemon = True
+#            self._timers[source].start()
+        self._heardFrom[source] = True
         log = msg
         if msg.find('SYNC') > -1:
             log = 'SYNCNEWPLAYER'
@@ -64,6 +65,7 @@ class client(object):
     def _handleLost(self, msg):
         missing = matchmaker.parseAddr(msg)
         self._incrementPlayerLost(missing)
+        self._check(missing)
 
     def _handleKick(self, msg):
         kicked = matchmaker.parseAddr(msg)
@@ -85,10 +87,11 @@ class client(object):
     def _addPlayer(self, player):
         if player == None:
             raise Exception()
-        if self._isSafe:
-            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-            self._timers[player].daemon = True
-            self._timers[player].start()
+#        if self._isSafe:
+#            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+#            self._timers[player].daemon = True
+#            self._timers[player].start()
+        self._heardFrom[player] = False
         self.log('added ' + str(player))
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
@@ -102,13 +105,18 @@ class client(object):
                 self._playerRemovedHander(player)
             
     def _search(self, player):
+        if not player in self.getPlayers():
+            return 
         self._incrementPlayerLost(player)
+        self._check(player)
+            
+    def _check(self, player):
         if self._matchmaker.getAddress() != self.getLeader():
             self.send(self.getLeader(), 'LOST ' + str(player))
-        if self._isSafe:
-            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-            self._timers[player].daemon = True
-            self._timers[player].start()
+#        if self._isSafe:
+#            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+#            self._timers[player].daemon = True
+#            self._timers[player].start()
         if self.getLeader() == self._matchmaker.getAddress() and self._lostPlayers[player] > len(self.getPlayers())/2:
             del self._lostPlayers[player]
             sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
@@ -146,14 +154,25 @@ class client(object):
         self._msgHandler = onMessageReceived
         self._playerAddedHander = onPlayerAdded
         self._playerRemovedHander = onPlayerRemoved
+        self._count = 0
+        self._heardFrom = {}
         
     def _heartbeat(self):
+        self._count = self._count + 1
         for player in self.getPlayers():
             self.send(player, 'ping')
         t = threading.Timer(5,self._heartbeat)
         t.daemon = True
-        t.start()
-        
+
+        if self._count == 5:
+            self._count = 0
+            for player in self._heardFrom.keys():
+                if not self._heardFrom[player]:
+                    self._search(player)
+            self._heardFrom = {}
+            for player in self.getPlayers():
+                self._heardFrom[player] = False
+        t.start()        
     def log(self, msg):
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
@@ -183,7 +202,7 @@ def run():
     #c = client(name, port)
     #c.findGame()
     if len(sys.argv) < 4:
-        for i in range(0,99):
+        for i in range(0,49):
             t = threading.Thread(target=foo)
             t.start()
     else:
@@ -205,7 +224,7 @@ def foo():
     c.findGame()
     time.sleep(120)
 def sqlLog(msg,time, id):
-    run = 100
+    run = 50
     conn = sqlite3.connect('db')
     c = conn.cursor()
     s = "insert into logs values ('" + msg.replace("'", "") + "', " + str(time) + ", " + str(run) + ", '" + str(id).replace("'","")  + "')"
