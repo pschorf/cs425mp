@@ -18,6 +18,7 @@ class matchmaker(object):
         return self._addr
     
     def changeLeader(self):
+        
         newLeader = self._otherPlayers[0]
         oldLeader = self._leader
         self._leader = newLeader
@@ -60,9 +61,19 @@ class matchmaker(object):
         else:
             self.send((self._nameserver,self._nsport), 'ADDPLAYER')
         
-    def _getGame(self,attempt=3):
+    def _getGame(self,attempt=4):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect((self._nameserver, self._nsport))
+        sock.settimeout(45)
+        try:
+            sock.connect((self._nameserver, self._nsport))
+    	except:
+	    sock.close()
+	    if attempt > 0:
+                time.sleep(10)
+                self._getGame(attempt-1)
+                return
+            else:
+                raise
         self._addr = sock.getsockname()
         sock.send(str(self._addr) + '###JOIN')
         resp = sock.recv(1024)
@@ -91,8 +102,12 @@ class matchmaker(object):
             else:
                 raise
         self._addr = sock.getsockname()
-        sock.send(str(self._addr) + '### JOIN')
-        resp = sock.recv(1024)
+        sock.send(str(self._addr) + '###JOIN')
+        try:
+            resp = sock.recv(1024)
+        except:
+            self._getGame()
+            return
         if resp.find('SUCCESS') > -1:
             arr = resp.split('##')
             arr = arr[1:len(arr)]
@@ -112,20 +127,22 @@ class matchmaker(object):
         source_addr = ()
         arr = resp.split('###')
         if len(arr) < 2:
+            print str(arr)
             return
         else:
             resp = arr[1]
             source_addr = parseAddr(arr[0])
-        if resp.find('JOIN') > -1 and self._leader == self._addr:
+        if resp.find('JOIN') == 0 and self._leader == self._addr:
             client.send('SUCCESS' + formatPlayers(self._otherPlayers))
             for player in self._otherPlayers:
                 self.send(player, 'NEWPLAYER' + str(source_addr))
             self._addPlayer(client_addr)
-        elif resp.find('NEWPLAYER') > -1:
+        elif resp.find('NEWPLAYER') == 0:
             self._addPlayer(parseAddr(resp))
-        elif resp.find('DISCONNECT') > -1:
+        elif resp.find('DISCONNECT') == 0:
             self.removePlayer(source_addr)
-        self._handler(resp, source_addr)
+        else:
+            self._handler(resp, source_addr)
             
     def send(self, addr, message):
         if self._leader == None:
@@ -154,8 +171,11 @@ class matchmaker(object):
         sock.bind(addr)
         sock.listen(50)
         while 1:
-            (client, client_addr) = sock.accept()
-            self._handleRequest(client, client_addr)
+            try:
+                (client, client_addr) = sock.accept()
+                self._handleRequest(client, client_addr)
+            except:
+                pass
     def _ping(self):
         self.send((self._nameserver, self._nsport), 'PING')
         if self._leader == self._addr:

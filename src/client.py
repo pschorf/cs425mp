@@ -3,7 +3,7 @@ import socket, re, threading, matchmaker, time, os, sys
 NAMESERVER = socket.gethostbyname(socket.gethostname())
 NSPORT = 5555
 file_lock = threading.Lock()
-TIMEOUT = 10
+TIMEOUT = 90
 
 
 class client(object):
@@ -20,7 +20,10 @@ class client(object):
     def getPlayers(self):
         return self._matchmaker.getPlayers()
     def send(self, target, msg):
-        self.log('sent ' + msg + ' to ' + str(target))
+        log = msg
+        if msg.find('SYNC') > -1:
+            log = 'SYNCNEWPLAYER'
+        self.log('sent ' + log + ' to ' + str(target))
         self._matchmaker.send(target, msg)
     def sendToAll(self, msg):
         for player in self.getPlayers():
@@ -32,17 +35,21 @@ class client(object):
             self._timers[source].cancel()
         if source in self._lostPlayers:
             self._lostPlayers[source] = 0
-        self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
-        self._timers[source].daemon = True
-        self._timers[source].start()
-        self.log('received ' + msg + ' from ' + str(source))
+        if self._isSafe:
+            self._timers[source] = threading.Timer(TIMEOUT, self._search, [source])
+            self._timers[source].daemon = True
+            self._timers[source].start()
+        log = msg
+        if msg.find('SYNC') > -1:
+            log = 'SYNCNEWPLAYER'
+        self.log('received ' + log + ' from ' + str(source))
         if msg.find('LOST') > -1:
             self._handleLost(msg)
         elif msg.find('KICK') > -1 and source == self.getLeader():
             self._handleKick(msg)
         elif msg.find('LEADER-ELECT') > -1:
             self._handleElect(msg)
-        if self._msgHandler != None:
+        elif self._msgHandler != None:
             self._msgHandler(msg, source)
             
     def _handleElect(self, msg):
@@ -60,6 +67,9 @@ class client(object):
 
     def _handleKick(self, msg):
         kicked = matchmaker.parseAddr(msg)
+        if kicked == None:
+            self._log("Failed to parse " + msg)
+            return
         if kicked == self._matchmaker.getAddress():
             self.disconnect()
         else:
@@ -72,9 +82,12 @@ class client(object):
             self._lostPlayers[missing] = 1
         self.log(str(missing) + ' has count ' + str(self._lostPlayers[missing]))  
     def _addPlayer(self, player):
-        self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-        self._timers[player].daemon = True
-        self._timers[player].start()
+        if player == None:
+            raise Exception()
+        if self._isSafe:
+            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+            self._timers[player].daemon = True
+            self._timers[player].start()
         self.log('added ' + str(player))
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
@@ -90,9 +103,10 @@ class client(object):
         self._incrementPlayerLost(player)
         if self._matchmaker.getAddress() != self.getLeader():
             self.send(self.getLeader(), 'LOST ' + str(player))
-        self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
-        self._timers[player].daemon = True
-        self._timers[player].start()
+        if self._isSafe:
+            self._timers[player] = threading.Timer(TIMEOUT, self._search, [player])
+            self._timers[player].daemon = True
+            self._timers[player].start()
         if self.getLeader() == self._matchmaker.getAddress() and self._lostPlayers[player] > len(self.getPlayers())/2:
             del self._lostPlayers[player]
             for i in self.getPlayers():
@@ -112,7 +126,8 @@ class client(object):
                  onMessageReceived=None,
                  onPlayerAdded=None,
                  onPlayerRemoved=None,
-                 onLeaderChange=None):
+                 onLeaderChange=None,
+                 isSafe=True):
         self._matchmaker = matchmaker.matchmaker(servername=servername, port=port, handler=self._handleMsg,
                                                  onLeaderChanged=onLeaderChange)
         self._timers = {}
@@ -120,9 +135,11 @@ class client(object):
         self._matchmaker.onPlayerRemoved = self._removePlayer
         self._logFile = open(self._getLog(), 'w')
         self._lostPlayers = {}
-        t = threading.Timer(5,self._heartbeat)
-        t.daemon = True
-        t.start()
+        self._isSafe = isSafe
+        if self._isSafe:
+            t = threading.Timer(5,self._heartbeat)
+            t.daemon = True
+            t.start()
         self._msgHandler = onMessageReceived
         self._playerAddedHander = onPlayerAdded
         self._playerRemovedHander = onPlayerRemoved
@@ -135,8 +152,6 @@ class client(object):
         t.start()
         
     def log(self, msg):
-        if msg.find('SYNCNEWPLAYER') > -1:
-            msg = msg.split('SYNCNEWPLAYER ')[0]
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()    
     def _getLog(self):
@@ -144,7 +159,7 @@ class client(object):
         files = os.listdir('logs')
         curFile = 0
         for file in files:
-            m = re.match(str(os.getpid()) + '_(\d)\.log', file)
+            m = re.match(str(os.getpid()) + '_(\d+)\.log', file)
             if m != None:
                 i = int(m.group(1))
                 if i >= curFile:

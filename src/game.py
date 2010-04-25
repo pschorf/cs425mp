@@ -19,7 +19,7 @@ mlock = threading.RLock()
 # The interval at which to run the the game loop
 update_interval = 1.0
 
-## A class to define the state of the player
+
 class state(object):
     global dirs, board, sops
     
@@ -114,12 +114,7 @@ class game(object):
             for num in arr:
                 baz += str(num)
             print baz
-    ## Constructor
-    # @param server_ip The IP Addres of the server.
-    # @param server_port The port of the server, default 5555
-    # @param wait_time The time to allow the program to run. If not set, the game will run indefinitely.
-    # @param isSafe Boolean to toggle the timeout threads on and off. Used for running many clients on one machine to keep under the thread limit.
-    # @param printStates Boolean to toggle printing the board on and off.
+            
     def __init__(self, server_ip, 
                  server_port=5555,
                  wait_time=None,
@@ -145,8 +140,6 @@ class game(object):
         else:
             intervalExecute(update_interval, self.update)
             time.sleep(wait_time)
-    ## Changes the leader of the game
-    # @param player The new player
     def _newLeader(self, player):
         if player == self._c.getSelf():
             self._states[player].changeType(sops['PACMAN'])
@@ -227,7 +220,6 @@ class game(object):
             mlock.release()
         if self._shouldPrint:
             self.draw()
-    ## Accepts keyboard input
     def _input(self):
         f = open('input', 'r')
         for m in f:
@@ -271,5 +263,4 @@ if __name__ == "__main__":
                 doPrint = False
             elif opt in ("p","--port="):
                 port = int(arg)
-	print doPrint
     f = game(ip, port, 60,isSafe=safe,printStates=doPrint)

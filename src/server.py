@@ -10,11 +10,14 @@ def listenForRequests():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((socket.gethostbyname(socket.gethostname()), LISTEN_PORT))
-    sock.listen(100)
+    sock.listen(1000)
     log('SERVER LISTENING ON ' + str(sock.getsockname()))
     while 1:
-        (client, client_addr) = sock.accept()
-        req = parseRequest(client.recv(1024), client, client_addr)
+        try:
+            (client, client_addr) = sock.accept()
+            req = parseRequest(client.recv(1024), client, client_addr)
+        except:
+            pass
 
 def joinGame(client, client_addr):
     global games
