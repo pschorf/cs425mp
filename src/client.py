@@ -96,7 +96,7 @@ class client(object):
         if self._playerAddedHander != None:
             self._playerAddedHander(player)
     def _removePlayer(self, player):
-        sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
+        #sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
         if player in self._timers:
             self._timers[player].cancel()
             del self._timers[player]
@@ -119,7 +119,7 @@ class client(object):
 #            self._timers[player].start()
         if self.getLeader() == self._matchmaker.getAddress() and self._lostPlayers[player] > len(self.getPlayers())/2:
             del self._lostPlayers[player]
-            sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
+            #sqlLog('kicked ' + str(player), time.time(), str(self.getSelf()))
             for i in self.getPlayers():
                 self.send(i, 'KICK ' + str(player))           
             self._matchmaker.removePlayer(player)
@@ -202,7 +202,7 @@ def run():
     #c = client(name, port)
     #c.findGame()
     if len(sys.argv) < 4:
-        for i in range(0,49):
+        for i in range(0,10):
             t = threading.Thread(target=foo)
             t.start()
     else:
@@ -222,9 +222,9 @@ def foo():
         port = int(sys.argv[2])    
     c = client(name, port)
     c.findGame()
-    time.sleep(120)
+    #time.sleep(120)
 def sqlLog(msg,time, id):
-    run = 50
+    run = 40
     conn = sqlite3.connect('db')
     c = conn.cursor()
     s = "insert into logs values ('" + msg.replace("'", "") + "', " + str(time) + ", " + str(run) + ", '" + str(id).replace("'","")  + "')"

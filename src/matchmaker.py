@@ -77,6 +77,8 @@ class matchmaker(object):
         self._addr = sock.getsockname()
         sock.send(str(self._addr) + '###JOIN')
         resp = sock.recv(1024)
+        t = time.time() - self._t0
+        sqlLog('found game', str(t), str(self._addr))
         if resp.find('NEWGAME') > -1:
             self._leader = self._addr
             sock.close()
@@ -194,11 +196,19 @@ class matchmaker(object):
         self._pingThread = None
         self._handler = handler
         self._onLeaderChange = onLeaderChanged
+        self._t0 = time.time()
         if self._handler == None:
             self._handler = lambda k, y: k
 
 def _dummy(text, source):
     pass  
+def sqlLog(msg,time, id):
+    run = 10
+    conn = sqlite3.connect('db')
+    c = conn.cursor()
+    s = "insert into logs values ('" + msg.replace("'", "") + "', " + str(time) + ", " + str(run) + ", '" + str(id).replace("'","")  + "')"
+    c.execute(s)
+    conn.commit()
         
 
 def formatPlayers(players):
