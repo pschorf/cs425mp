@@ -229,4 +229,5 @@ if __name__ == "__main__":
                 doPrint = False
             elif opt in ("p","--port="):
                 port = int(arg)
+	print doPrint
     f = game(ip, port, 60,isSafe=safe,printStates=doPrint)
