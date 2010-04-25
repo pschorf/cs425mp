@@ -1,3 +1,7 @@
+## @package server
+# Defines the server
+# @author Paul Schorfheide
+
 import socket, time, re, threading, sys
 games = []
 LISTEN_PORT = 5555

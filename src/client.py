@@ -1,3 +1,7 @@
+## @package client
+# insert description
+# @author Paul Schorfheide
+
 import socket, re, threading, matchmaker, time, os, sys
 
 NAMESERVER = socket.gethostbyname(socket.gethostname())
@@ -5,7 +9,7 @@ NSPORT = 5555
 file_lock = threading.Lock()
 TIMEOUT = 90
 
-
+## insert description
 class client(object):
     def findGame(self):
         x = self._matchmaker.findGame()
@@ -169,7 +173,7 @@ class client(object):
         f.close()
         file_lock.release()
         return file
-
+## run from command line
 def run():
     name = socket.gethostbyname(socket.gethostname())
     port = 5555
