@@ -1,0 +1,81 @@
+\hypertarget{classboard_1_1board}{
+\section{board.board Class Reference}
+\label{classboard_1_1board}\index{board::board@{board::board}}
+}
+
+
+A class to define the board.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classboard_1_1board_ac0e543c77c7278f47148c0f35719d5cc}{
+def \hyperlink{classboard_1_1board_ac0e543c77c7278f47148c0f35719d5cc}{\_\-\_\-init\_\-\_\-}}
+\label{classboard_1_1board_ac0e543c77c7278f47148c0f35719d5cc}
+
+\begin{DoxyCompactList}\small\item\em Constructor. \item\end{DoxyCompactList}\item 
+def \hyperlink{classboard_1_1board_a0bcaab198cdcc0187bfa6b29b7541139}{canMove}
+\begin{DoxyCompactList}\small\item\em Given a direction and your current position, returns whether you a making a valid move. \item\end{DoxyCompactList}\item 
+def \hyperlink{classboard_1_1board_a5b482bb9a90ccfa9f2f25ac4abd068b2}{pacmanStart}
+\begin{DoxyCompactList}\small\item\em Defines the starting position for a PACMAN player. \item\end{DoxyCompactList}\item 
+def \hyperlink{classboard_1_1board_ad491812ee3e354dc1ecc6ae3a5822f43}{ghostStart}
+\begin{DoxyCompactList}\small\item\em Defines the starting position for a Ghost player. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classboard_1_1board_a510051aa32b8f9bee5d27afab823ba3d}{
+{\bfseries board}}
+\label{classboard_1_1board_a510051aa32b8f9bee5d27afab823ba3d}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A class to define the board. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classboard_1_1board_a0bcaab198cdcc0187bfa6b29b7541139}{
+\index{board::board@{board::board}!canMove@{canMove}}
+\index{canMove@{canMove}!board::board@{board::board}}
+\subsubsection[{canMove}]{\setlength{\rightskip}{0pt plus 5cm}def board.board.canMove ( {\em self}, \/   {\em dir}, \/   {\em x}, \/   {\em y})}}
+\label{classboard_1_1board_a0bcaab198cdcc0187bfa6b29b7541139}
+
+
+Given a direction and your current position, returns whether you a making a valid move. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em dir}]The direction to move \item[{\em (x,y)}]A tuple of your x and y coordinates \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A boolean indicating a valid move 
+\end{DoxyReturn}
+\hypertarget{classboard_1_1board_ad491812ee3e354dc1ecc6ae3a5822f43}{
+\index{board::board@{board::board}!ghostStart@{ghostStart}}
+\index{ghostStart@{ghostStart}!board::board@{board::board}}
+\subsubsection[{ghostStart}]{\setlength{\rightskip}{0pt plus 5cm}def board.board.ghostStart ( {\em self})}}
+\label{classboard_1_1board_ad491812ee3e354dc1ecc6ae3a5822f43}
+
+
+Defines the starting position for a Ghost player. 
+
+\begin{DoxyReturn}{Returns}
+A tuple coordinates and position of the Ghost start 
+\end{DoxyReturn}
+\hypertarget{classboard_1_1board_a5b482bb9a90ccfa9f2f25ac4abd068b2}{
+\index{board::board@{board::board}!pacmanStart@{pacmanStart}}
+\index{pacmanStart@{pacmanStart}!board::board@{board::board}}
+\subsubsection[{pacmanStart}]{\setlength{\rightskip}{0pt plus 5cm}def board.board.pacmanStart ( {\em self})}}
+\label{classboard_1_1board_a5b482bb9a90ccfa9f2f25ac4abd068b2}
+
+
+Defines the starting position for a PACMAN player. 
+
+\begin{DoxyReturn}{Returns}
+a tuple coordinates and position of the PACMAN start 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+src/board.py\end{DoxyCompactItemize}

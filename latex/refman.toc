@@ -1,0 +1,38 @@
+\contentsline {chapter}{\numberline {1}Namespace Index}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Package List}{1}{section.1.1}
+\contentsline {chapter}{\numberline {2}Class Index}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Class List}{3}{section.2.1}
+\contentsline {chapter}{\numberline {3}Namespace Documentation}{5}{chapter.3}
+\contentsline {section}{\numberline {3.1}Package board}{5}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Detailed Description}{5}{subsection.3.1.1}
+\contentsline {section}{\numberline {3.2}Package client}{6}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Detailed Description}{6}{subsection.3.2.1}
+\contentsline {section}{\numberline {3.3}Package game}{7}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Detailed Description}{7}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Function Documentation}{8}{subsection.3.3.2}
+\contentsline {subsubsection}{\numberline {3.3.2.1}intervalExecute}{8}{subsubsection.3.3.2.1}
+\contentsline {section}{\numberline {3.4}Package matchmaker}{9}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Detailed Description}{9}{subsection.3.4.1}
+\contentsline {section}{\numberline {3.5}Package server}{10}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Detailed Description}{10}{subsection.3.5.1}
+\contentsline {section}{\numberline {3.6}board.board Class Reference}{11}{section.3.6}
+\contentsline {subsection}{\numberline {3.6.1}Detailed Description}{11}{subsection.3.6.1}
+\contentsline {subsection}{\numberline {3.6.2}Member Function Documentation}{11}{subsection.3.6.2}
+\contentsline {subsubsection}{\numberline {3.6.2.1}canMove}{11}{subsubsection.3.6.2.1}
+\contentsline {subsubsection}{\numberline {3.6.2.2}ghostStart}{12}{subsubsection.3.6.2.2}
+\contentsline {subsubsection}{\numberline {3.6.2.3}pacmanStart}{12}{subsubsection.3.6.2.3}
+\contentsline {section}{\numberline {3.7}client.client Class Reference}{13}{section.3.7}
+\contentsline {subsection}{\numberline {3.7.1}Detailed Description}{13}{subsection.3.7.1}
+\contentsline {section}{\numberline {3.8}game.game Class Reference}{14}{section.3.8}
+\contentsline {subsection}{\numberline {3.8.1}Detailed Description}{14}{subsection.3.8.1}
+\contentsline {subsection}{\numberline {3.8.2}Member Function Documentation}{14}{subsection.3.8.2}
+\contentsline {subsubsection}{\numberline {3.8.2.1}\_\discretionary {-}{}{}\_\discretionary {-}{}{}init\_\discretionary {-}{}{}\_\discretionary {-}{}{}}{14}{subsubsection.3.8.2.1}
+\contentsline {section}{\numberline {3.9}matchmaker.matchmaker Class Reference}{15}{section.3.9}
+\contentsline {subsection}{\numberline {3.9.1}Detailed Description}{15}{subsection.3.9.1}
+\contentsline {section}{\numberline {3.10}game.state Class Reference}{16}{section.3.10}
+\contentsline {subsection}{\numberline {3.10.1}Detailed Description}{16}{subsection.3.10.1}
+\contentsline {subsection}{\numberline {3.10.2}Member Function Documentation}{16}{subsection.3.10.2}
+\contentsline {subsubsection}{\numberline {3.10.2.1}\_\discretionary {-}{}{}\_\discretionary {-}{}{}init\_\discretionary {-}{}{}\_\discretionary {-}{}{}}{16}{subsubsection.3.10.2.1}
+\contentsline {subsubsection}{\numberline {3.10.2.2}changeType}{16}{subsubsection.3.10.2.2}
+\contentsline {subsubsection}{\numberline {3.10.2.3}getState}{16}{subsubsection.3.10.2.3}
+\contentsline {subsubsection}{\numberline {3.10.2.4}setState}{17}{subsubsection.3.10.2.4}

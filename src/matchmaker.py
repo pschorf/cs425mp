@@ -1,15 +1,11 @@
-'''
-Created on Feb 22, 2010
-
-@author: Paul
-'''
+## @package matchmaker
+# Controls the interface with the matchmaking server
+# @author Paul Schorfheide
 
 import re, threading, socket, weakref, time
 
+## A class to help control the interface with the matchmaking server
 class matchmaker(object):
-    '''
-    A class to help control the interface with the matchmaking server
-    '''
     
     def getLeader(self):
         return self._leader
@@ -213,4 +209,3 @@ def parseAddr(s):
         return (m.group(1), int(m.group(2)))
     except:
         pass
-        

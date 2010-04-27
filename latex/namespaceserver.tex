@@ -1,0 +1,111 @@
+\hypertarget{namespaceserver}{
+\section{Package server}
+\label{namespaceserver}\index{server@{server}}
+}
+
+
+Defines the server.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespaceserver_a30e130aa4d3cd49c4cffac5dddb6e81d}{
+def {\bfseries listenForRequests}}
+\label{namespaceserver_a30e130aa4d3cd49c4cffac5dddb6e81d}
+
+\item 
+\hypertarget{namespaceserver_a52bebc72026b54aae5f0f2f44166eecb}{
+def {\bfseries joinGame}}
+\label{namespaceserver_a52bebc72026b54aae5f0f2f44166eecb}
+
+\item 
+\hypertarget{namespaceserver_ab533b87d24f748982c5a5a05fb0679da}{
+def {\bfseries addPlayer}}
+\label{namespaceserver_ab533b87d24f748982c5a5a05fb0679da}
+
+\item 
+\hypertarget{namespaceserver_a308bcc701ebae822a6d5f7bffbe1f540}{
+def {\bfseries makeTimer}}
+\label{namespaceserver_a308bcc701ebae822a6d5f7bffbe1f540}
+
+\item 
+\hypertarget{namespaceserver_ad7cd6bf89ff431f488a106b303a78f56}{
+def {\bfseries parseRequest}}
+\label{namespaceserver_ad7cd6bf89ff431f488a106b303a78f56}
+
+\item 
+\hypertarget{namespaceserver_a1684ade683d94a0242747dc88ea2fa4d}{
+def {\bfseries changeLeader}}
+\label{namespaceserver_a1684ade683d94a0242747dc88ea2fa4d}
+
+\item 
+\hypertarget{namespaceserver_ae2512251379da8233daea6ce120480d5}{
+def {\bfseries clearGame}}
+\label{namespaceserver_ae2512251379da8233daea6ce120480d5}
+
+\item 
+\hypertarget{namespaceserver_a716ae541aad9f8416c3d747cae8ea250}{
+def {\bfseries logAndSend}}
+\label{namespaceserver_a716ae541aad9f8416c3d747cae8ea250}
+
+\item 
+\hypertarget{namespaceserver_ae8502fbd808dc8930c0b9c17ea2443d3}{
+def {\bfseries log}}
+\label{namespaceserver_ae8502fbd808dc8930c0b9c17ea2443d3}
+
+\item 
+\hypertarget{namespaceserver_a68d6b7c9005e686c3b9c963273ef1f12}{
+def {\bfseries parseAddr}}
+\label{namespaceserver_a68d6b7c9005e686c3b9c963273ef1f12}
+
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespaceserver_ac2c7fa83dd66e394d014ac236809fbf7}{
+list {\bfseries games} = \mbox{[}$\,$\mbox{]}}
+\label{namespaceserver_ac2c7fa83dd66e394d014ac236809fbf7}
+
+\item 
+\hypertarget{namespaceserver_a44ff5c8a0709041cc59ca91e2dd66ff5}{
+int {\bfseries LISTEN\_\-PORT} = 5555}
+\label{namespaceserver_a44ff5c8a0709041cc59ca91e2dd66ff5}
+
+\item 
+\hypertarget{namespaceserver_ae35e6c2886e7d971de061928e5d3f129}{
+string {\bfseries LOGFILE\_\-NAME} = 'server.log'}
+\label{namespaceserver_ae35e6c2886e7d971de061928e5d3f129}
+
+\item 
+\hypertarget{namespaceserver_a2a02a56ac8c1f577826ab016237bd8db}{
+int {\bfseries TIMEOUT} = 10}
+\label{namespaceserver_a2a02a56ac8c1f577826ab016237bd8db}
+
+\item 
+\hypertarget{namespaceserver_a3a814bbedcb542946b3f72097703aa17}{
+int {\bfseries logfile} = 0}
+\label{namespaceserver_a3a814bbedcb542946b3f72097703aa17}
+
+\item 
+\hypertarget{namespaceserver_af4de76de20802875897b283f7cdf93e4}{
+tuple {\bfseries port} = int(sys.argv\mbox{[}1\mbox{]})}
+\label{namespaceserver_af4de76de20802875897b283f7cdf93e4}
+
+\item 
+\hypertarget{namespaceserver_a314f68f9bde3d44b5d98d7c73af7b8d7}{
+dictionary {\bfseries timers} = \{\}}
+\label{namespaceserver_a314f68f9bde3d44b5d98d7c73af7b8d7}
+
+\item 
+\hypertarget{namespaceserver_a3db0278fc2eadcf5ab797481e89b0840}{
+tuple {\bfseries t} = threading.Thread(target=listenForRequests())}
+\label{namespaceserver_a3db0278fc2eadcf5ab797481e89b0840}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Defines the server. \begin{DoxyAuthor}{Author}
+Paul Schorfheide 
+\end{DoxyAuthor}

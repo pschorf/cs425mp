@@ -1,0 +1,58 @@
+[Mon Mar 22 17:38:08 2010] ('192.168.1.119', 54646)
+[Mon Mar 22 17:38:08 2010] added None
+[Mon Mar 22 17:38:08 2010] received SYNCNEWPLAYER (dp0
+(S'192.168.1.119'
+p1
+I54644
+tp2
+S'(I0\nI0\nI0\nI0\ntp0\n.'
+p3
+s(S'192.168.1.119'
+p4
+I54646
+tp5
+S'(I0\nI0\nI0\nI1\ntp0\n.'
+p6
+s. from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] received SYNC from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] added ('192.168.1.119', 54648)
+[Mon Mar 22 17:38:08 2010] received NEWPLAYER('192.168.1.119', 54648) from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] received NEWPLAYER('192.168.1.119', 54648) from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] added ('192.168.1.119', 54652)
+[Mon Mar 22 17:38:08 2010] received NEWPLAYER('192.168.1.119', 54652) from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] received NEWPLAYER('192.168.1.119', 54652) from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] added ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:08 2010] received NEWPLAYER('192.168.1.119', 54657) from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:08 2010] received NEWPLAYER('192.168.1.119', 54657) from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received LEFT from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:10 2010] received UP from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:12 2010] received ping from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:12 2010] received ping from ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:13 2010] sent ping to ('192.168.1.119', 54648)
+[Mon Mar 22 17:38:13 2010] sent ping to ('192.168.1.119', 54652)
+[Mon Mar 22 17:38:13 2010] sent ping to ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:13 2010] sent ping to ('192.168.1.119', 54644)
+[Mon Mar 22 17:38:13 2010] received ping from ('192.168.1.119', 54648)
+[Mon Mar 22 17:38:13 2010] received ping from ('192.168.1.119', 54648)
+[Mon Mar 22 17:38:13 2010] received ping from ('192.168.1.119', 54652)
+[Mon Mar 22 17:38:13 2010] received ping from ('192.168.1.119', 54652)
+[Mon Mar 22 17:38:13 2010] received ping from ('192.168.1.119', 54657)
+[Mon Mar 22 17:38:13 2010] received ping from ('192.168.1.119', 54657)

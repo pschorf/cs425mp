@@ -1,0 +1,73 @@
+\hypertarget{namespacegame}{
+\section{Package game}
+\label{namespacegame}\index{game@{game}}
+}
+
+
+Controls the game state and handles the operation of the game.  
+
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classgame_1_1state}{state}
+\begin{DoxyCompactList}\small\item\em Defines the player's state. \item\end{DoxyCompactList}\item 
+class \hyperlink{classgame_1_1game}{game}
+\begin{DoxyCompactList}\small\item\em A class to control the game. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacegame_a40a0c38f5e2e47a449f03097213b1650}{intervalExecute}
+\begin{DoxyCompactList}\small\item\em Executes a function repeatedly at the given interval. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespacegame_a448ab52c1ad4fb2e2da413ebe0f282b6}{
+dictionary \hyperlink{namespacegame_a448ab52c1ad4fb2e2da413ebe0f282b6}{dirs} = \{'LEFT':0, 'RIGHT':1, 'UP':2, 'DOWN':3\}}
+\label{namespacegame_a448ab52c1ad4fb2e2da413ebe0f282b6}
+
+\begin{DoxyCompactList}\small\item\em Defines the directions for movement. \item\end{DoxyCompactList}\item 
+\hypertarget{namespacegame_a3774645aa0514732e4a62fc8e22d95ca}{
+dictionary \hyperlink{namespacegame_a3774645aa0514732e4a62fc8e22d95ca}{sops} = \{'PACMAN':0, 'GHOST':1\}}
+\label{namespacegame_a3774645aa0514732e4a62fc8e22d95ca}
+
+\begin{DoxyCompactList}\small\item\em Defines the player types. \item\end{DoxyCompactList}\item 
+\hypertarget{namespacegame_adf1800c0e5ecfa32e21bd2301d912b14}{
+tuple \hyperlink{namespacegame_adf1800c0e5ecfa32e21bd2301d912b14}{board} = \hyperlink{classboard_1_1board}{board.board}()}
+\label{namespacegame_adf1800c0e5ecfa32e21bd2301d912b14}
+
+\begin{DoxyCompactList}\small\item\em The global playing board. \item\end{DoxyCompactList}\item 
+\hypertarget{namespacegame_aa4d96b074efeeac5472317ba48cd692f}{
+tuple \hyperlink{namespacegame_aa4d96b074efeeac5472317ba48cd692f}{mlock} = threading.RLock()}
+\label{namespacegame_aa4d96b074efeeac5472317ba48cd692f}
+
+\begin{DoxyCompactList}\small\item\em A semaphore used to when pushing or popping the messages queue. \item\end{DoxyCompactList}\item 
+\hypertarget{namespacegame_ace44eb7f816b22c7c99e0e59c13a7884}{
+float \hyperlink{namespacegame_ace44eb7f816b22c7c99e0e59c13a7884}{update\_\-interval} = 1.0}
+\label{namespacegame_ace44eb7f816b22c7c99e0e59c13a7884}
+
+\begin{DoxyCompactList}\small\item\em The interval at which to run the the game loop. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Controls the game state and handles the operation of the game. \begin{DoxyAuthor}{Author}
+Myles Megyesi 
+\end{DoxyAuthor}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespacegame_a40a0c38f5e2e47a449f03097213b1650}{
+\index{game@{game}!intervalExecute@{intervalExecute}}
+\index{intervalExecute@{intervalExecute}!game@{game}}
+\subsubsection[{intervalExecute}]{\setlength{\rightskip}{0pt plus 5cm}def game.intervalExecute ( {\em interval}, \/   {\em func}, \/   {\em args}, \/   {\em argd})}}
+\label{namespacegame_a40a0c38f5e2e47a449f03097213b1650}
+
+
+Executes a function repeatedly at the given interval. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em interval}]executes func($\ast$args, $\ast$$\ast$argd) each interval \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a callable object to enable you terminate the timer 
+\end{DoxyReturn}

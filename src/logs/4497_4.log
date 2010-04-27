@@ -1,0 +1,23 @@
+[Mon Mar 22 19:58:03 2010] added ('192.168.1.119', 61027)
+[Mon Mar 22 19:58:03 2010] added ('192.168.1.119', 61029)
+[Mon Mar 22 19:58:03 2010] added ('192.168.1.119', 61033)
+[Mon Mar 22 19:58:03 2010] ('192.168.1.119', 61038)
+[Mon Mar 22 19:58:03 2010] received RIGHT from ('192.168.1.119', 61027)
+[Mon Mar 22 19:58:03 2010] received DOWN from ('192.168.1.119', 61027)
+[Mon Mar 22 19:58:03 2010] added None
+[Mon Mar 22 19:58:03 2010] received 
+[Mon Mar 22 19:58:03 2010] STARTING GAME
+[Mon Mar 22 19:58:04 2010] received RIGHT from ('192.168.1.119', 61029)
+[Mon Mar 22 19:58:04 2010] received DOWN from ('192.168.1.119', 61029)
+[Mon Mar 22 19:58:04 2010] received RIGHT from ('192.168.1.119', 61033)
+[Mon Mar 22 19:58:04 2010] received DOWN from ('192.168.1.119', 61033)
+[Mon Mar 22 19:58:04 2010] sent RIGHT to ('192.168.1.119', 61027)
+[Mon Mar 22 19:58:04 2010] sent RIGHT to ('192.168.1.119', 61029)
+[Mon Mar 22 19:58:04 2010] sent RIGHT to ('192.168.1.119', 61033)
+[Mon Mar 22 19:58:04 2010] sent RIGHT to ('192.168.1.119', 61025)
+[Mon Mar 22 19:58:04 2010] sent DOWN to ('192.168.1.119', 61027)
+[Mon Mar 22 19:58:04 2010] sent DOWN to ('192.168.1.119', 61029)
+[Mon Mar 22 19:58:04 2010] sent DOWN to ('192.168.1.119', 61033)
+[Mon Mar 22 19:58:04 2010] sent DOWN to ('192.168.1.119', 61025)
+[Mon Mar 22 19:58:04 2010] received RIGHT from ('192.168.1.119', 61025)
+[Mon Mar 22 19:58:04 2010] received DOWN from ('192.168.1.119', 61025)

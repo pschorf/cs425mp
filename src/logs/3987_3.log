@@ -1,0 +1,16 @@
+[Mon Mar 22 19:18:37 2010] added ('192.168.1.119', 59875)
+[Mon Mar 22 19:18:37 2010] added ('192.168.1.119', 59877)
+[Mon Mar 22 19:18:37 2010] ('192.168.1.119', 59881)
+[Mon Mar 22 19:18:38 2010] added None
+[Mon Mar 22 19:18:38 2010] received 
+[Mon Mar 22 19:18:38 2010] added ('192.168.1.119', 59886)
+[Mon Mar 22 19:18:38 2010] STARTING GAME
+[Mon Mar 22 19:18:38 2010] received NEWPLAYER('192.168.1.119', 59886) from ('192.168.1.119', 59873)
+[Mon Mar 22 19:18:38 2010] received RIGHT from ('192.168.1.119', 59875)
+[Mon Mar 22 19:18:38 2010] received RIGHT from ('192.168.1.119', 59877)
+[Mon Mar 22 19:18:38 2010] sent RIGHT to ('192.168.1.119', 59875)
+[Mon Mar 22 19:18:38 2010] sent RIGHT to ('192.168.1.119', 59877)
+[Mon Mar 22 19:18:38 2010] sent RIGHT to ('192.168.1.119', 59886)
+[Mon Mar 22 19:18:38 2010] sent RIGHT to ('192.168.1.119', 59873)
+[Mon Mar 22 19:18:39 2010] received RIGHT from ('192.168.1.119', 59886)
+[Mon Mar 22 19:18:39 2010] received RIGHT from ('192.168.1.119', 59873)
