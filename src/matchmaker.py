@@ -229,6 +229,7 @@ class matchmaker(object):
         if self._handler == None:
             self._handler = lambda k, y: k
 
+## @cond RUN_FROM_COMMAND_LINE
 def _dummy(text, source):
     pass  
         
@@ -245,3 +246,5 @@ def parseAddr(s):
         return (m.group(1), int(m.group(2)))
     except:
         pass
+
+## @endcond

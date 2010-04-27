@@ -3,15 +3,20 @@
 # @author Paul Schorfheide
 
 import socket, time, re, threading, sys
-#@var games the list of games waiting for players
+## @var games
+# The list of games waiting for players
 games = []
-#@var LISTEN_PORT the port to listen on
+## @var LISTEN_PORT
+# The port to listen on
 LISTEN_PORT = 5555
-#@var LOGFILE_NAME the name of the file to log messages to
+## @var LOGFILE_NAME
+# The name of the file to log messages to
 LOGFILE_NAME = 'server.log'
-#@var TIMEOT the number of seconds to keep games in the queue
+## @var TIMEOUT
+# The number of seconds to keep games in the queue
 TIMEOUT = 10
-#@var logfile the logfile handle
+## @var logfile
+# The logfile handle
 logfile = 0
 
 ## the listener
@@ -29,8 +34,8 @@ def listenForRequests():
             pass
 
 ## handle join requests from client
-#@param client the client socket
-#@param client_addr the address of the client socket
+# @param client the client socket
+# @param client_addr the address of the client socket
 def joinGame(client, client_addr):
     global games
     if len(games) == 0:
@@ -144,11 +149,13 @@ def parseAddr(s):
     m = re.search('\(\'([\d\.]+)\', (\d+)\)', s)
     return (m.group(1), int(m.group(2)))
 
-    
+## @cond RUN_FROM_COMMAND_LINE
 if len(sys.argv) >= 2:
     port = int(sys.argv[1])
 timers = {}
 logfile = open(LOGFILE_NAME, 'a')
 t = threading.Thread(target=listenForRequests())
 t.start()
+
+## @endcond
 

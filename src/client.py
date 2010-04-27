@@ -1,15 +1,19 @@
 ## @package client
-# @see client.client
+# Higher level client handling group management
 # @author Paul Schorfheide
 
 import socket, re, threading, matchmaker, time, os, sys
-## @var NAMESERVER the default server name
+## @var NAMESERVER
+# the default server name
 NAMESERVER = socket.gethostbyname(socket.gethostname())
-## @var NSPORT the default server port
+## @var NSPORT
+# the default server port
 NSPORT = 5555
-## @var file_lock lock for the log file
+## @var file_lock
+# lock for the log file
 file_lock = threading.Lock()
-## @var TIMEOUT the default timeout interval
+## @var TIMEOUT
+# the default timeout interval
 TIMEOUT = 90
 
 ## a higher level client handling group management
@@ -229,7 +233,7 @@ class client(object):
         f.close()
         file_lock.release()
         return file
-## run from command line
+## @cond RUN_FROM_COMMAND_LINE
 def run():
     name = socket.gethostbyname(socket.gethostname())
     port = 5555
@@ -243,3 +247,4 @@ def run():
     c.disconnect()
 if __name__ == '__main__':
     run()
+## @endcond

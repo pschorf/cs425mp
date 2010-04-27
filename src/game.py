@@ -42,7 +42,7 @@ class state(object):
         self._y = y
         self._dir = dir
         self._type = type
-    # Move the player one space in a given direction
+    ## Move the player one space in a given direction
     # @param dir The direction to move the player
     def move(self, dir):
         if board.canMove(dir, (self._x, self._y)):
