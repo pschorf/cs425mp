@@ -8,12 +8,12 @@ import re, threading, socket, weakref, time
 class matchmaker(object):
     
     ## Return the current game leader
-    # @return:  the game's leader
+    # @return  the game's leader
     def getLeader(self):
         return self._leader
     
     ## returns the (ip, port) of the current client
-    # @return: the (ip, port) of the current client
+    # @return the (ip, port) of the current client
     def getAddress(self):
         return self._addr
     
@@ -32,19 +32,19 @@ class matchmaker(object):
             self._onLeaderChange(newLeader)
     
     ## get a list of all other players
-    # @return: the (ip, port) of all other players
+    # @return the (ip, port) of all other players
     def getPlayers(self): 
         return [p for p in self._otherPlayers + [self._leader] if p != self._addr and p != None]
     
     ## remove a player from the game
-    # @param player: the player to add 
+    # @param player the player to add 
     def removePlayer(self, player):
         self._removePlayer(player)
         if self.getLeader() == self.getAddress():
             self._requestNewPlayer()
         
     ## join a new game if not in one
-    # @return: the other players in the game    
+    # @return the other players in the game    
     def findGame(self):
         if self._leader == None:
             self._getGame()
@@ -70,7 +70,7 @@ class matchmaker(object):
             self.send((self._nameserver,self._nsport), 'ADDPLAYER')
     
     ## lookup a new game
-    # @param attempt: the number of attempts to make. 
+    # @param attempt the number of attempts to make. 
     def _getGame(self,attempt=4):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(45)
@@ -102,8 +102,8 @@ class matchmaker(object):
             self._joinGame((m.group(1), int(m.group(2))),attempt)
     
     ## join a game
-    # @param game_addr: the game to join
-    # @param attempt: the number of attempts to make  
+    # @param game_addr the game to join
+    # @param attempt the number of attempts to make  
     def _joinGame(self, game_addr,attempt=3):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
@@ -136,8 +136,8 @@ class matchmaker(object):
             t.start()
     
     ## handle a message reciept from the client
-    # @param client: the connected socket from the client
-    # @param client_addr: the socket address  
+    # @param client the connected socket from the client
+    # @param client_addr the socket address  
     def _handleRequest(self, client, client_addr):
         resp = client.recv(1024)
         source_addr = ()
@@ -161,8 +161,8 @@ class matchmaker(object):
             self._handler(resp, source_addr)
     
     ## send a message to a client
-    # @param addr: the address to send the message to
-    # @param message: the message to send  
+    # @param addr the address to send the message to
+    # @param message the message to send  
     def send(self, addr, message):
         if self._leader == None:
             return
@@ -174,14 +174,14 @@ class matchmaker(object):
             pass
     
     ## add a player to the game
-    # @param player: the player to add
+    # @param player the player to add
     def _addPlayer(self, player):
         self._otherPlayers.append(player)
         if self.onPlayerAdded != None and player != self._addr:
             self.onPlayerAdded(player)
     
     ## remove a player from the game
-    # @param player: the player to remove
+    # @param player the player to remove
     def _removePlayer(self, player):
         if player in self._otherPlayers:
             self._otherPlayers.remove(player)
@@ -189,7 +189,7 @@ class matchmaker(object):
             self.onPlayerRemoved(player)
     
     ## function for the listener thread
-    # @param addr: the address to bind to
+    # @param addr the address to bind to
     def _listen(self, addr):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -211,10 +211,10 @@ class matchmaker(object):
             self._pingThread.start()
     
     ##constructor
-    #@param servername: the ip address of the server
-    #@param port: the server port
-    #@param handler: a function to handle (high level) messages
-    #@param onLeaderChanged: function to be called when a new leader is elected
+    #@param servername the ip address of the server
+    #@param port the server port
+    #@param handler a function to handle (high level) messages
+    #@param onLeaderChanged function to be called when a new leader is elected
     def __init__(self, servername=socket.gethostbyname(socket.gethostname()), 
                  port=5555,handler=None,
                  onLeaderChanged=None):
