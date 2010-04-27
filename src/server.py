@@ -3,13 +3,18 @@
 # @author Paul Schorfheide
 
 import socket, time, re, threading, sys
+#@var games: the list of games waiting for players
 games = []
+#@var LISTEN_PORT: the port to listen on
 LISTEN_PORT = 5555
+#@var LOGFILE_NAME: the name of the file to log messages to
 LOGFILE_NAME = 'server.log'
+#@var TIMEOT: the number of seconds to keep games in the queue
 TIMEOUT = 10
-
+#@var logfile: the logfile handle
 logfile = 0
 
+## the listener
 def listenForRequests():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -23,6 +28,9 @@ def listenForRequests():
         except:
             pass
 
+## handle join requests from client
+#@param client: the client socket
+#@param client_addr: the address of the client socket
 def joinGame(client, client_addr):
     global games
     if len(games) == 0:
@@ -37,6 +45,9 @@ def joinGame(client, client_addr):
             games[0] = (addr, count - 1)
         logAndSend(client, client_addr, 'JOIN ' + str(addr))
 
+## increment the player waiting count for a game
+#@param client: the client socket
+#@param client_addr: the address of the client
 def addPlayer(client, client_addr):
     global games
     entry = [(a,b) for (a,b) in games if a == client_addr]
@@ -52,6 +63,9 @@ def addPlayer(client, client_addr):
         games.append((client_addr, 1))
     logAndSend(client, client_addr, 'REQUEST PENDING')
 
+## start a timer to cancel a game
+#@param game: the game to wait on
+#@param create: whether or not to create a timer if one does not exist
 def makeTimer(game, create=False):
     global timers
     if game in timers:
@@ -61,6 +75,10 @@ def makeTimer(game, create=False):
         timers[game].daemon = True
         timers[game].start()
 
+## parse a message from a client
+#@param s: the message
+#@param client: the client socket
+#@param client_addr: the address of the client socket
 def parseRequest(s, client, client_addr):
     global timers
     arr = s.split('###')
@@ -86,6 +104,9 @@ def parseRequest(s, client, client_addr):
     else:
         logAndSend(client, client_addr, 'ERROR: PARSE ERROR')
 
+## change the leader of a game
+#@param old: the old leader
+#@param new: the new leader
 def changeLeader(old, new):
     global games
     entry = [(a,b) for (a,b) in games if a == old]
@@ -93,22 +114,32 @@ def changeLeader(old, new):
         i = games.index(entry[0])
         games[i] = (new, entry[0][1])
     
-
+## remove a game
+#@param game: the game to remove
 def clearGame(game):
     global games
     i = [(a,b) for (a,b) in games if a == game]
     if len(i) > 0:
         games.remove(i[0])
     log('removed game ' + str(game))
+
+## send a message and log the send event
+#@param client: the socket to send to
+#@param client_addr: the address to send to
+#@param msg: the message to send
 def logAndSend(client, client_addr, msg):
     log('SENT ' + msg + ' TO '+ str(client_addr))
     client.send(msg)
-    
+
+## log a message
+#@param s: the message to log
 def log(s):
     global logfile
     logfile.write('[' + time.asctime() + '] ' + s + '\r\n')
     logfile.flush()
-    
+
+## parse an address from a message
+#@param s: the string to parse
 def parseAddr(s):
     m = re.search('\(\'([\d\.]+)\', (\d+)\)', s)
     return (m.group(1), int(m.group(2)))
