@@ -1,3 +1,5 @@
 src/server.log
 *.pyc
-
+src/logs/*
+latex
+html
