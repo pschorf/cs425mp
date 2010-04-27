@@ -1,7 +1,0 @@
-[Mon Mar 22 18:46:10 2010] ('192.168.1.119', 59101)
-[Mon Mar 22 18:46:11 2010] added None
-[Mon Mar 22 18:46:11 2010] received 
-[Mon Mar 22 18:46:11 2010] received LEADER-ELECT##('192.168.1.119', 59099) from ('192.168.1.119', 59099)
-[Mon Mar 22 18:46:11 2010] new leader: ('192.168.1.119', 59101)
-[Mon Mar 22 18:46:11 2010] removed ('192.168.1.119', 59099)
-[Mon Mar 22 18:46:11 2010] STOPPING GAME
