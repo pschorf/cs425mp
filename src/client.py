@@ -1,21 +1,21 @@
 ## @package client
-# @see: client.client
+# @see client.client
 # @author Paul Schorfheide
 
 import socket, re, threading, matchmaker, time, os, sys
-## @var NAMESERVER: the default server name
+## @var NAMESERVER the default server name
 NAMESERVER = socket.gethostbyname(socket.gethostname())
-## @var NSPORT: the default server port
+## @var NSPORT the default server port
 NSPORT = 5555
-## @var file_lock: lock for the log file
+## @var file_lock lock for the log file
 file_lock = threading.Lock()
-## @var TIMEOUT: the default timeout interval
+## @var TIMEOUT the default timeout interval
 TIMEOUT = 90
 
 ## a higher level client handling group management
 class client(object):
     ## connect to a new game
-    #@return: the other players in the game
+    #@return the other players in the game
     def findGame(self):
         x = self._matchmaker.findGame()
         self.log(str(self._matchmaker.getAddress()))
@@ -26,21 +26,21 @@ class client(object):
         self._matchmaker.disconnect()
     
     ## return the (ip, port) for this client
-    #@return:  the (ip, port) of this client  
+    #@return  the (ip, port) of this client  
     def getSelf(self):
         return self._matchmaker.getAddress()
     ## return the leader for this client
-    #@return: the (ip, port) of the leader
+    #@return the (ip, port) of the leader
     def getLeader(self):
         return self._matchmaker.getLeader()
     ## return the other players in the game
-    #@return: a list of the other players in the game
+    #@return a list of the other players in the game
     def getPlayers(self):
         return self._matchmaker.getPlayers()
     
     ## send a message to another player
-    #@param target: the client to send the message to
-    #@param msg: the message to send
+    #@param target the client to send the message to
+    #@param msg the message to send
     def send(self, target, msg):
         log = msg
         if msg.find('SYNC') > -1:
@@ -49,14 +49,14 @@ class client(object):
         self._matchmaker.send(target, msg)
     
     ## helper to send a message to all clients
-    #@param msg: the message to send
+    #@param msg the message to send
     def sendToAll(self, msg):
         for player in self.getPlayers():
             self.send(player, msg)
             
     ## message handler function
-    #@param msg: the message text
-    #@param source: the sender
+    #@param msg the message text
+    #@param source the sender
     def _handleMsg(self, msg, source):
         if not source in self.getPlayers():
             return
@@ -82,7 +82,7 @@ class client(object):
             self._msgHandler(msg, source)
     
     ## handler for election messages
-    #@param msg: the message text
+    #@param msg the message text
     def _handleElect(self, msg):
         arr = msg.split('##')
         if len(arr) < 2:
@@ -93,13 +93,13 @@ class client(object):
             self.log('new leader: ' + str(self.getLeader()))
     
     ## handler for lost messages
-    #@param msg: the message text
+    #@param msg the message text
     def _handleLost(self, msg):
         missing = matchmaker.parseAddr(msg)
         self._incrementPlayerLost(missing)
 
     ##handler for kick messages
-    #@param msg: the message text
+    #@param msg the message text
     def _handleKick(self, msg):
         kicked = matchmaker.parseAddr(msg)
         if kicked == None:
@@ -111,7 +111,7 @@ class client(object):
             self._matchmaker.removePlayer(kicked)
             
     ## increment the number of intervals a player has been missing for
-    #@param missing: the missing player
+    #@param missing the missing player
     def _incrementPlayerLost(self, missing):
         if missing in self._lostPlayers:
             self._lostPlayers[missing] = self._lostPlayers[missing] + 1
@@ -120,7 +120,7 @@ class client(object):
         self.log(str(missing) + ' has count ' + str(self._lostPlayers[missing]))
         
     ## handler for player added event
-    #@param player: the added player  
+    #@param player the added player  
     def _addPlayer(self, player):
         if player == None:
             raise Exception()
@@ -133,7 +133,7 @@ class client(object):
             self._playerAddedHander(player)
             
     ## handler for player removed event
-    #@param player: the removed player
+    #@param player the removed player
     def _removePlayer(self, player):
         if player in self._timers:
             self._timers[player].cancel()
@@ -143,7 +143,7 @@ class client(object):
                 self._playerRemovedHander(player)
             
     ## called when a player is missing
-    #@param player: the missing player
+    #@param player the missing player
     def _search(self, player):
         self._incrementPlayerLost(player)
         if self._matchmaker.getAddress() != self.getLeader():
@@ -168,13 +168,13 @@ class client(object):
         self.log('new leader: ' + str(self.getLeader()))
         
     ## constructor
-    #@param servername: the server ip
-    #@param port: the server port
-    #@param onMessageReceived: the message received handler
-    #@param onPlayerAdded: handler for player added
-    #@param onPlayerRemoved: handler for player removed
-    #@param onLeaderChange: handler for when the leader is changed
-    #@param isSafe: determines the number of listener threads to run        
+    #@param servername the server ip
+    #@param port the server port
+    #@param onMessageReceived the message received handler
+    #@param onPlayerAdded handler for player added
+    #@param onPlayerRemoved handler for player removed
+    #@param onLeaderChange handler for when the leader is changed
+    #@param isSafe determines the number of listener threads to run        
     def __init__(self, servername=socket.gethostbyname(socket.gethostname()), 
                  port=5555,
                  onMessageReceived=None,
@@ -207,13 +207,13 @@ class client(object):
         t.start()
     
     ## log a message to a file
-    #@param msg: the message to log
+    #@param msg the message to log
     def log(self, msg):
         self._logFile.write('[' + time.asctime() + '] ' + msg + '\n')
         self._logFile.flush()
 
     ## get a log file
-    #@return: the log file name
+    #@return the log file name
     def _getLog(self):
         file_lock.acquire()
         files = os.listdir('logs')
