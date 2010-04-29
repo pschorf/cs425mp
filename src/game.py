@@ -2,7 +2,7 @@
 # Controls the game state and handles the operation of the game
 # @author Myles Megyesi
 
-import board, client, sys, threading, Queue, pickle, time, os, random, getopt
+import board, client, sys, threading, Queue, pickle, time, os, random, getopt, Console, msvcrt
 
 ## @var dirs 
 # Defines the directions for movement
@@ -18,7 +18,24 @@ board = board.board()
 mlock = threading.RLock()
 ## @var update_interval 
 #The interval at which to run the the game loop
-update_interval = 1.0
+update_interval = .1
+
+## @var pacx
+#store pac's position
+pacx = 0
+## @var pacy
+#store pac's position
+pacy = 0
+
+
+#######
+
+##get input from keyboard
+def kbpass():
+    if msvcrt.kbhit():
+        return ord(msvcrt.getch())
+    else:
+        return 0
 
 ## Defines the player's state
 class state(object):
@@ -58,6 +75,8 @@ class state(object):
             elif (dir == dirs['DOWN']):
                 self._y += 1
                 self._dir = dir
+            if(self._type == sops['PACMAN']):
+                board.eatDot((self._x, self._y))
     ## Constructor
     # @param type The type to make the player
     def __init__(self, type):
@@ -85,17 +104,25 @@ def intervalExecute(interval, func, *args, **argd):
 ## A class to control the game
 class game(object):
     global msgs, dirs, sops, board, update_interval
+	
+	#input keys
+    global keyLeft, keyRight, keyUp, keyDown
+	
     ## Disconnects the player from the socket, used upon exit of game
     def disconnect(self):
         self._c.disconnect
+    ## @cond TESTING_PRINT
     def printStates2(self):
         print str(self._states)
     def printStates(self):
         print str(self._c.getSelf())
         for k in self._states:
             print self._states[k].getState()
+    ## @endcond
+    
     ## Draws the board on the screen, with the players
     def draw(self):
+        global pacx, pacy
         tempit = 0
         temp = []
         for arr in board.board:
@@ -106,26 +133,53 @@ class game(object):
         for k in self._states:
             (x, y, dir, type) = self._states[k].getState()
             if type == sops['PACMAN']:
-                temp[y][x] = 'p'
+                temp[y][x] = '\01'
+                pacx = x
+                pacy = y
             elif type == sops['GHOST']:
-                temp[y][x] = 'g'
-        os.system(['clear', 'cls'][os.name == 'nt'])
+                temp[y][x] = '\04'
+                if (x == pacx):
+                    if(y == pacy):
+                        self.gameOver = True
+		iter = 0
         for arr in temp:
             baz = ''
             for num in arr:
                 baz += str(num)
-            print baz
+            self.gameCon.text(0, iter, baz)
+            iter += 1
+        if(self._states[self._c.getSelf()]._type == sops['PACMAN']):
+            self.gameCon.text(40, 0, "EAT THE PELLETS", 0x3f)
+            self.gameCon.text(40, 1, "SCORE", 0x2f)
+            self.gameCon.text(40, 2, str(board.pacScores()), 0x1f)
+        elif(self._states[self._c.getSelf()]._type == sops['GHOST']):
+            self.gameCon.text(40, 0, "KILL THE DUDE", 0x3f)
+            self.gameCon.text(40, 1, "SCORE", 0x2f)
+            self.gameCon.text(40, 2, str(board.ghostScores()), 0x1f)
+        if(self.gameOver):
+            self.gameCon.text(40,5, "GAME OVER")
     ## Constructor
     # @param server_ip The IP address of the server
     # @param server_port The port of the server
     # @param wait_time The time to run the game. If not set, the game will run indefinitely
     # @param isSafe Boolean to toggle the timeout threads on and off
     # @param printStates Boolean to toggle the drawing on and off
+    # @param aiType Boolean to toggle the AI
     def __init__(self, server_ip, 
                  server_port=5555,
                  wait_time=None,
                  isSafe=True,
-                 printStates=True):
+                 printStates=True,
+                aiType=False):
+        ## @cond KEYBOARD_CONSTANTS
+	self.keyLeft = 75
+	self.keyRight = 77
+	self.keyUp = 72
+	self.keyDown = 80
+        ## @endcond
+        ## @var self.isAI
+        # False if human-controlled
+        self.isAI = aiType
         ## @var self._holding
         # A queue for messages recieve while the game is not yet in play
         self._holding = Queue.Queue()
@@ -148,18 +202,76 @@ class game(object):
         # A Client object
         self._c = client.client(server_ip, server_port, self._handleMsg, self._playerAdded, self._playerRemoved, self._newLeader,isSafe)
         players = self._c.findGame()
+        ## @var self.gameOver
+        #game is over
+        self.gameOver = False
+        ## @var self.gameCon
+        #better control of the screen
+        self.gameCon = Console.getconsole()
         if not players:
             self._states[self._c.getSelf()] = state(sops['PACMAN'])
         inputThread = threading.Thread(target=self._input)
         inputThread.daemon = True
         inputThread.start()
+        self._run(server_ip, server_port, wait_time, isSafe, printStates)
+    ## runs the game, starts a new one if desired
+    # @param server_ip The IP address of the server
+    # @param server_port The port of the server
+    # @param wait_time The time to run the game. If not set, the game will run indefinitely
+    # @param isSafe Boolean to toggle the timeout threads on and off
+    # @param printStates Boolean to toggle the drawing on and off
+    def _run(self, server_ip, 
+	            server_port,
+                wait_time,
+                isSafe,
+                printStates):
         if wait_time==None:
-            while True:
+            while self.gameOver == False:
                 time.sleep(update_interval)
                 self.update()
         else:
             intervalExecute(update_interval, self.update)
             time.sleep(wait_time)
+        self.gameCon.page()
+        self.gameCon.text(0,0, "play again?")
+        self.gameOver = self.isAI
+        while self.gameOver == False:
+            foo = kbpass()
+            if foo == self.keyLeft:
+                self.gameOver = true
+            elif foo == self.keyRight:
+		self.gameCon.text(5,5,"FINDING GAME")
+                ## @var self._holding
+                # A queue for messages recieve while the game is not yet in play
+                self._holding = Queue.Queue()
+                ## @var self._msgs
+                # A queue for the messages recieved
+                self._msgs = Queue.Queue()
+                ## @var self._play
+                # A boolean to trigger the game play. Game loop won't run until true
+                self._play = False
+                ## @var self._numPlayers
+                # The number of players currently in the game
+                self._numPlayers = 1
+                ## @var self._states
+                # A dictionary of all the players states
+                self._states = {}
+                ## @var self._shouldPrint
+                # A toggle for the state printing
+                self._shouldPrint = printStates
+                ## @var self._c
+                # A Client object
+                self._c = client.client(server_ip, server_port, self._handleMsg, self._playerAdded, self._playerRemoved, self._newLeader,isSafe)
+                players = self._c.findGame()
+                ## @var self.gameOver
+                #game is over
+                self.gameOver = False
+                ## @var self.gameCon
+                #better control of the screen
+                if not players:
+                    self._states[self._c.getSelf()] = state(sops['PACMAN'])
+                self._run(server_ip, server_port, wait_time, isSafe, printStates)
+		self.gameOver = True
     ## Changes the leader of the game
     # @param player The new leader
     def _newLeader(self, player):
@@ -214,13 +326,34 @@ class game(object):
                 self._states[source].move(dirs['DOWN'])
     ## The game loop
     def update(self):
+        if self.gameOver:
+            return
         if not self._play:
             return
         while not self._holding.empty():
             (msg, source) = self._holding.get()
             self._handleMsg(msg, source)
-        #randomize moves
-        self._msgs.put(random.randrange(0, 4, 1))
+        #keyboard input
+	if self.isAI == False:
+		myDir = kbpass()
+	elif self.isAI == True:
+		myDir = random.randint(0, 3)
+		if myDir == 0:
+			myDir = self.keyLeft
+		elif myDir == 1:
+			myDir = self.keyRight
+		elif myDir == 2:
+			myDir = self.keyUp
+		elif myDir == 3:
+			myDir = self.keyDown
+	if myDir == self.keyLeft:
+	    self._msgs.put(0)
+	elif myDir == self.keyRight:
+	    self._msgs.put(1)
+	elif myDir == self.keyUp:
+	    self._msgs.put(2)
+	elif myDir == self.keyDown:
+	    self._msgs.put(3)
         while not self._msgs.empty():
             mlock.acquire()
             q = self._msgs.get()
@@ -242,7 +375,7 @@ class game(object):
             mlock.release()
         if self._shouldPrint:
             self.draw()
-    ## Accepts keyboard input
+    ## Accepts file input
     def _input(self):
         f = open('input', 'r')
         for m in f:
@@ -271,15 +404,16 @@ if __name__ == "__main__":
     port =5555
     safe = True
     doPrint = True
+    ai = False
     args = []
     if len(sys.argv) < 2:
-        print 'Usage: ' + sys.argv[0] + ' server_ip -p <server_port> -u -q'
+        print 'Usage: ' + sys.argv[0] + ' server_ip -p <server_port> -a -u -q'
         exit(0)
     elif len(sys.argv) >= 2:
         ip = sys.argv[1]
         args = sys.argv[2:]
     if not args == []:
-        opts, args = getopt.getopt(args, "uqp:", ["unsafe", "quiet", "port="])
+        opts, args = getopt.getopt(args, "uqpa:", ["unsafe", "quiet", "port=", "ai"])
         for opt, arg in opts:
             if opt in ("u", "--unsafe"):
                 safe = False
@@ -287,6 +421,8 @@ if __name__ == "__main__":
                 doPrint = False
             elif opt in ("p","--port="):
                 port = int(arg)
+            elif opt in ("a", "--ai"):
+                ai = True
 	print doPrint
-    f = game(ip, port, 60,isSafe=safe,printStates=doPrint)
+    f = game(ip, port, None,isSafe=safe,printStates=doPrint, aiType = ai)
 ## @endcond
