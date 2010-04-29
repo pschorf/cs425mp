@@ -12,6 +12,8 @@ python server.py
 
 game is the actual game client, and can be run as
 
-python game.py <server_ip> --unsafe --quiet --port=<server_port>
+python game.py <server_ip> --unsafe --quiet --port=<server_port> -ai
 
 all that's necessary is the server ip, quiet supresses the output, unsafe turns off several threads that monitor the other game players, this is necessary to test the 2000 clients.
+
+In order to run game.py, you must have the Pythond Console module installed. We have include the installer in our source files.
